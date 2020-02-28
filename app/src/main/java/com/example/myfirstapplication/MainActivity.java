@@ -11,6 +11,9 @@ import android.util.Log;
 import android.os.AsyncTask;
 
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -39,6 +42,14 @@ public class MainActivity extends AppCompatActivity {
         mat.execute(urlpath);
         Log.e("FUCK","okkkk");
 
+        try {
+            JSONObject data = new JSONObject();
+            data.put("Demo", "SSS");
+            new ApiClient().call("Index.hello", null);
+            new ApiClient().call("Index.sudo", data);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     class MyAsyncTask extends AsyncTask<String, Void, Bitmap>{
