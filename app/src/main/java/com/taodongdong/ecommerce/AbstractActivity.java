@@ -1,4 +1,4 @@
-package com.example.myfirstapplication;
+package com.taodongdong.ecommerce;
 
 import androidx.appcompat.app.AppCompatActivity;
 

@@ -1,4 +1,4 @@
-package com.example.myfirstapplication;
+package com.example.ecommerce;
 
 import android.content.Context;
 

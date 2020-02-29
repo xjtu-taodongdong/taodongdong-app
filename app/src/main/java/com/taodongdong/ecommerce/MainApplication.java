@@ -1,4 +1,4 @@
-package com.example.myfirstapplication;
+package com.taodongdong.ecommerce;
 
 import android.app.Application;
 import android.util.Log;

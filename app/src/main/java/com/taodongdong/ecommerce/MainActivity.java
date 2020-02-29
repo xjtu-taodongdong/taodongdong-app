@@ -1,6 +1,4 @@
-package com.example.myfirstapplication;
-
-import androidx.appcompat.app.AppCompatActivity;
+package com.taodongdong.ecommerce;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -10,11 +8,8 @@ import android.widget.ImageView;
 import android.os.AsyncTask;
 
 
-import com.taodongdong.ecommerce.api.AbstractApiClient;
+import com.taodongdong.ecommerce.R;
 import com.taodongdong.ecommerce.api.ApiCallback;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URL;
