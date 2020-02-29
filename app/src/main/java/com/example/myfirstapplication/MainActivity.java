@@ -7,24 +7,24 @@ import android.os.Bundle;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.widget.ImageView;
-import android.util.Log;
 import android.os.AsyncTask;
 
+
+import com.taodongdong.ecommerce.api.AbstractApiClient;
+import com.taodongdong.ecommerce.api.ApiCallback;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.HttpURLConnection;
 import java.io.InputStream;
-import java.io.IOException;
 import java.io.BufferedInputStream;
 
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AbstractActivity {
 
     private ImageView imageView = null;
     private String urlpath = "https://taodongdong.ddltech.top/storage/avatar/demo.jpg";
@@ -42,14 +42,29 @@ public class MainActivity extends AppCompatActivity {
         mat.execute(urlpath);
         Log.e("FUCK","okkkk");
 
-        try {
-            JSONObject data = new JSONObject();
-            data.put("Demo", "SSS");
-            new ApiClient().call("Index.hello", null);
-            new ApiClient().call("Index.sudo", data);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        client().call("Index.hello", null, new ApiCallback() {
+            @Override
+            public void onSuccess(Object data) {
+                Log.e("SUCCESS 1", String.valueOf(data));
+            }
+
+            @Override
+            public void onError(int code, String message, Object data) {
+                Log.e("ERROR 1", message + ";" + data);
+            }
+        });
+
+        client().call("Index.sudo", "SSS", new ApiCallback() {
+            @Override
+            public void onSuccess(Object data) {
+                Log.e("SUCCESS 2", String.valueOf(data));
+            }
+
+            @Override
+            public void onError(int code, String message, Object data) {
+                Log.e("ERROR 2", message + ";" + data);
+            }
+        });
     }
 
     class MyAsyncTask extends AsyncTask<String, Void, Bitmap>{
