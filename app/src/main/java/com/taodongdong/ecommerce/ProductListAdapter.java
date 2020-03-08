@@ -1,4 +1,4 @@
-package com.example.helloworld;
+package com.taodongdong.ecommerce;
 
 import android.content.Context;
 import android.util.Log;

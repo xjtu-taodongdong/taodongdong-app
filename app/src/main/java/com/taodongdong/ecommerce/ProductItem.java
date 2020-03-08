@@ -1,3 +1,4 @@
+package com.taodongdong.ecommerce;
 public class ProductItem {
     private String description;
     private int image;
