@@ -37,20 +37,20 @@
 
             <TextView
                 android:id="@+id/username"
-                android:layout_width="100dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/username" />
+                android:text="@string/username"
+                android:textSize="25sp" />
 
             <EditText
                 android:id="@+id/editText"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:autofillHints=""
                 android:ems="10"
                 android:inputType="textPersonName"
-                android:text="" tools:targetApi="o"/>
+                android:text="" />
 
         </LinearLayout>
 
@@ -61,10 +61,10 @@
 
             <TextView
                 android:id="@+id/password"
-                android:layout_width="100dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/password"
-                android:gravity="center" />
+                android:textSize="25sp" />
 
             <EditText
                 android:id="@+id/editText2"

@@ -1,26 +1,21 @@
 package com.taodongdong.ecommerce;
 
 import android.graphics.Bitmap;
-import android.os.Bundle;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
+import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
-import android.os.AsyncTask;
 
-
-import com.taodongdong.ecommerce.R;
 import com.taodongdong.ecommerce.api.ApiCallback;
 
-import java.io.IOException;
-import java.net.URL;
-import java.net.HttpURLConnection;
-import java.io.InputStream;
 import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
-
-
-public class MainActivity extends AbstractActivity {
-
+public class ProductsDetail extends AbstractActivity {
     private ImageView imageView = null;
     private String urlpath = "https://taodongdong.ddltech.top/storage/avatar/demo.jpg";
     private MyAsyncTask mat = null;
@@ -60,7 +55,7 @@ public class MainActivity extends AbstractActivity {
         });
     }
 
-    class MyAsyncTask extends AsyncTask<String, Void, Bitmap>{
+    class MyAsyncTask extends AsyncTask<String, Void, Bitmap> {
         @Override
         //第一个会调用的方法
         protected void onPreExecute() {
@@ -79,7 +74,6 @@ public class MainActivity extends AbstractActivity {
              * */
             Log.e("FUCK","okk");
             imageView.setImageBitmap(bitmap);
-            Log.e("FUCK","okkk");
         }
 
         @Override
@@ -112,7 +106,6 @@ public class MainActivity extends AbstractActivity {
                 e.printStackTrace();
             }
             //返回的是解析后的网络图像
-            Log.e("FUCK","ok");
             return bitmap;
         }
     }
