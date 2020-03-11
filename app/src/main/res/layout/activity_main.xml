@@ -7,18 +7,6 @@
     android:layout_height="match_parent"
     tools:context="com.taodongdong.ecommerce.MainActivity">
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="370dp"
-        android:layout_height="159dp"
-        android:contentDescription="@null"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.39"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.052" />
-
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="409dp"
@@ -40,6 +28,8 @@
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:gravity="center"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
                 android:text="@string/username" />
 
             <EditText
@@ -50,7 +40,10 @@
                 android:autofillHints=""
                 android:ems="10"
                 android:inputType="textPersonName"
-                android:text="" tools:targetApi="o"/>
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:text=""
+                tools:targetApi="o" />
 
         </LinearLayout>
 
@@ -63,8 +56,8 @@
                 android:id="@+id/password"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:text="@string/password"
-                android:gravity="center" />
+                android:gravity="center"
+                android:text="@string/password" />
 
             <EditText
                 android:id="@+id/editText2"
@@ -77,6 +70,18 @@
         </LinearLayout>
 
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="370dp"
+        android:layout_height="159dp"
+        android:contentDescription="@null"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.39"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.052" />
 
     <Button
         android:id="@+id/login"
