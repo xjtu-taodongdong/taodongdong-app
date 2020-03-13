@@ -1,14 +1,16 @@
 package com.taodongdong.ecommerce;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.graphics.BitmapFactory;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.os.AsyncTask;
 
 
-import com.taodongdong.ecommerce.R;
 import com.taodongdong.ecommerce.api.ApiCallback;
 
 import java.io.IOException;
@@ -24,6 +26,8 @@ public class MainActivity extends AbstractActivity {
     private ImageView imageView = null;
     private String urlpath = "https://taodongdong.ddltech.top/storage/avatar/demo.jpg";
     private MyAsyncTask mat = null;
+    private Button log = null;
+    private Button register = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +35,16 @@ public class MainActivity extends AbstractActivity {
         setContentView(R.layout.activity_main);
 
         imageView = (ImageView)findViewById(R.id.imageView);
+        log = (Button)findViewById(R.id.login);
+        register = (Button)findViewById(R.id.register);
+
+        register.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this,RegisterPage.class);
+                startActivity(intent);
+            }
+        });
 
         mat = new MyAsyncTask();
         mat.execute(urlpath);

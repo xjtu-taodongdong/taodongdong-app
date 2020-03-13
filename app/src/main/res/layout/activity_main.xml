@@ -30,14 +30,14 @@
                 android:gravity="center"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
-                android:layout_weight="0.75"
+                android:layout_weight="4"
                 android:text="@string/username" />
 
             <EditText
                 android:id="@+id/editText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.25"
+                android:layout_weight="1"
                 android:autofillHints=""
                 android:ems="10"
                 android:inputType="textPersonName"
@@ -56,14 +56,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:layout_weight="0.75"
+                android:layout_weight="4"
                 android:text="@string/password" />
 
             <EditText
                 android:id="@+id/editText2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.25"
+                android:layout_weight="1"
                 android:autofillHints=""
                 android:ems="10"
                 android:inputType="textPassword" />
