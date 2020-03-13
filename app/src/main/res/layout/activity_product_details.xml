@@ -1,7 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ProductDetails"/>
+    android:baselineAligned="false"
+    android:orientation="vertical"
+    tools:context=".ProductDetails">
+
+    <ImageView
+        android:id="@+id/ProductIcon"
+        android:layout_width="match_parent"
+        android:layout_height="322dp"
+        android:contentDescription="@string/showproducticon"
+        app:srcCompat="@drawable/taodongdong" />
+
+    <TextView
+        android:id="@+id/priceOfProduct"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="40sp"
+        android:text="¥999" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/productName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="60dp"
+            android:layout_marginRight="60dp"
+            android:text="@string/productName"
+            android:textSize="30sp" />
+
+        <TextView
+            android:id="@+id/remaining"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/remaining"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/remainingNum"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textSize="20sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/detailOfProduct"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子这是一个桃子" />
+        </ScrollView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="6"
+            style="?android:attr/buttonBarStyle"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/purchase"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                style="?android:attr/buttonBarButtonStyle"
+                android:textColor="#000000"
+                android:text="@string/purchase" />
+
+            <Button
+                android:id="@+id/backToProductList"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                style="?android:attr/buttonBarButtonStyle"
+                android:textColor="#000000"
+                android:text="@string/back" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

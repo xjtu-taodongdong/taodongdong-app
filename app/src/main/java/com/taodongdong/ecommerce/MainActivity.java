@@ -38,6 +38,13 @@ public class MainActivity extends AbstractActivity {
         log = (Button)findViewById(R.id.login);
         register = (Button)findViewById(R.id.register);
 
+        log.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this,ProductDetails.class);
+                startActivity(intent);
+            }
+        });
         register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
