@@ -24,7 +24,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ProductDetails"></activity>
-        <activity android:name=".RegisterPage"></activity>>
+        <activity android:name=".RegisterPage"></activity>
+        <activity android:name=".HomeActivity"></activity>
     </application>
-
 </manifest>

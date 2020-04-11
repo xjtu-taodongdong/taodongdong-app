@@ -20,7 +20,6 @@ import java.io.InputStream;
 import java.io.BufferedInputStream;
 
 
-
 public class MainActivity extends AbstractActivity {
 
     private ImageView imageView = null;
@@ -41,7 +40,7 @@ public class MainActivity extends AbstractActivity {
         log.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this,ProductDetails.class);
+                Intent intent = new Intent(MainActivity.this,HomeActivity.class);
                 startActivity(intent);
             }
         });

@@ -1,10 +1,13 @@
-package com.taodongdong.ecommerce;
+package com.taodongdong.ecommerce.prouctlistview;
+
+import android.graphics.Bitmap;
+
 public class ProductItem {
     private String description;
-    private int image;
+    private Bitmap image;
 
 
-    ProductItem(String description, int image) {
+    public ProductItem(String description, Bitmap image) {
         this.description = description;
         this.image = image;
     }
@@ -13,7 +16,7 @@ public class ProductItem {
         return description;
     }
 
-    public int getImage() {
+    public Bitmap getImage() {
         return image;
     }
 }

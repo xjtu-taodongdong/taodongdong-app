@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="55dp"
+    android:gravity="center"
+    android:background="@color/material_blue_grey_800"
+    android:orientation="horizontal">
+    <!--TODO 添加图标 -->
+
+        <ImageButton
+            android:id="@+id/id_tab_shop"
+            android:clickable="false"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/ic_launcher"
+            android:background="#00000000"/>
+
+        <ImageButton
+            android:id="@+id/id_tab_myshop"
+            android:clickable="false"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/ic_launcher"
+            android:background="#00000000"/>
+        <ImageButton
+            android:id="@+id/id_tab_usr"
+            android:clickable="false"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/ic_launcher"
+            android:background="#00000000"/>
+
+
+</LinearLayout>
