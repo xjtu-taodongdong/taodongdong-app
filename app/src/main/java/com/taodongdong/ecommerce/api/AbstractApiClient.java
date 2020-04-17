@@ -24,73 +24,91 @@ public abstract class AbstractApiClient {
         okHttpClient = new OkHttpClient();
     }
 
-    public void call(String action, JSONObject data, ApiCallback callback) {
+//    public void call(String action, JSONObject data, ApiCallback callback) {
+//        try {
+//            JSONObject payload = new JSONObject();
+//            payload.put("action", action);
+//            payload.put("data", data);
+//            sendRequest(String.valueOf(payload), callback);
+//        } catch (JSONException e) {
+//            onRequestJSONException(e);
+//        }
+//    }
+//
+//    public void call(String action, boolean data, ApiCallback callback) {
+//        try {
+//            JSONObject payload = new JSONObject();
+//            payload.put("action", action);
+//            payload.put("data", data);
+//            sendRequest(String.valueOf(payload), callback);
+//        } catch (JSONException e) {
+//            onRequestJSONException(e);
+//        }
+//    }
+//
+//    public void call(String action, double data, ApiCallback callback) {
+//        try {
+//            JSONObject payload = new JSONObject();
+//            payload.put("action", action);
+//            payload.put("data", data);
+//            sendRequest(String.valueOf(payload), callback);
+//        } catch (JSONException e) {
+//            onRequestJSONException(e);
+//        }
+//    }
+//
+//    public void call(String action, int data, ApiCallback callback) {
+//        try {
+//            JSONObject payload = new JSONObject();
+//            payload.put("action", action);
+//            payload.put("data", data);
+//            sendRequest(String.valueOf(payload), callback);
+//        } catch (JSONException e) {
+//            onRequestJSONException(e);
+//        }
+//    }
+//
+//    public void call(String action, long data, ApiCallback callback) {
+//        try {
+//            JSONObject payload = new JSONObject();
+//            payload.put("action", action);
+//            payload.put("data", data);
+//            sendRequest(String.valueOf(payload), callback);
+//        } catch (JSONException e) {
+//            onRequestJSONException(e);
+//        }
+//    }
+//
+//    public void call(String action, Object data, ApiCallback callback) {
+//        try {
+//            JSONObject payload = new JSONObject();
+//            payload.put("action", action);
+//            payload.put("data", data);
+//            sendRequest(String.valueOf(payload), callback);
+//        } catch (JSONException e) {
+//            onRequestJSONException(e);
+//        }
+//    }
+
+    protected JSONObject forAction(String action) throws JSONException {
+        JSONObject payload = new JSONObject();
+        payload.put("action", action);
+        return payload;
+    }
+
+    protected void sendRequest(String action, JSONObject data, ApiCallback<Object> callback) {
         try {
-            JSONObject payload = new JSONObject();
-            payload.put("action", action);
-            payload.put("data", data);
-            sendRequest(String.valueOf(payload), callback);
+            sendRequest(forAction(action).put("data", data), callback);
         } catch (JSONException e) {
             onRequestJSONException(e);
         }
     }
 
-    public void call(String action, boolean data, ApiCallback callback) {
-        try {
-            JSONObject payload = new JSONObject();
-            payload.put("action", action);
-            payload.put("data", data);
-            sendRequest(String.valueOf(payload), callback);
-        } catch (JSONException e) {
-            onRequestJSONException(e);
-        }
+    protected void sendRequest(JSONObject payload, ApiCallback<Object> callback) {
+        sendRequest(String.valueOf(payload), callback);
     }
 
-    public void call(String action, double data, ApiCallback callback) {
-        try {
-            JSONObject payload = new JSONObject();
-            payload.put("action", action);
-            payload.put("data", data);
-            sendRequest(String.valueOf(payload), callback);
-        } catch (JSONException e) {
-            onRequestJSONException(e);
-        }
-    }
-
-    public void call(String action, int data, ApiCallback callback) {
-        try {
-            JSONObject payload = new JSONObject();
-            payload.put("action", action);
-            payload.put("data", data);
-            sendRequest(String.valueOf(payload), callback);
-        } catch (JSONException e) {
-            onRequestJSONException(e);
-        }
-    }
-
-    public void call(String action, long data, ApiCallback callback) {
-        try {
-            JSONObject payload = new JSONObject();
-            payload.put("action", action);
-            payload.put("data", data);
-            sendRequest(String.valueOf(payload), callback);
-        } catch (JSONException e) {
-            onRequestJSONException(e);
-        }
-    }
-
-    public void call(String action, Object data, ApiCallback callback) {
-        try {
-            JSONObject payload = new JSONObject();
-            payload.put("action", action);
-            payload.put("data", data);
-            sendRequest(String.valueOf(payload), callback);
-        } catch (JSONException e) {
-            onRequestJSONException(e);
-        }
-    }
-
-    protected void sendRequest(String payload, final ApiCallback callback) {
+    protected void sendRequest(String payload, final ApiCallback<Object> callback) {
         RequestBody body = RequestBody.create(JSONType, payload);
         Request request = new Request.Builder().url(RPC_ENTRY).method("POST", body).build();
         Call call = okHttpClient.newCall(request);

@@ -1,11 +1,11 @@
 package com.taodongdong.ecommerce.api;
 
-public interface ApiCallback {
+public interface ApiCallback<T> {
     /**
      * data可能为空
      * @param data 响应体数据
      */
-    void onSuccess(Object data);
+    void onSuccess(T data);
 
     /**
      * message和data可能为空

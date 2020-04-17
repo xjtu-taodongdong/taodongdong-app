@@ -3,6 +3,8 @@ package com.taodongdong.ecommerce;
 import android.app.Application;
 import android.util.Log;
 
+import com.taodongdong.ecommerce.api.ApiClient;
+
 public class MainApplication extends Application {
     protected ApiClient apiClient = null;
 

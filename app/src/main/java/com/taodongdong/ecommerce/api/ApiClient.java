@@ -1,4 +1,4 @@
-package com.taodongdong.ecommerce;
+package com.taodongdong.ecommerce.api;
 
 import android.content.Context;
 import android.widget.Toast;
