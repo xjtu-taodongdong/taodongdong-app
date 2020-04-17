@@ -55,29 +55,29 @@ public class MainActivity extends AbstractActivity {
         mat = new MyAsyncTask();
         mat.execute(urlpath);
 
-        client().call("Index.hello", null, new ApiCallback() {
-            @Override
-            public void onSuccess(Object data) {
-                Log.e("SUCCESS 1", String.valueOf(data));
-            }
-
-            @Override
-            public void onError(int code, String message, Object data) {
-                Log.e("ERROR 1", message + ";" + data);
-            }
-        });
-
-        client().call("Index.sudo", "SSS", new ApiCallback() {
-            @Override
-            public void onSuccess(Object data) {
-                Log.e("SUCCESS 2", String.valueOf(data));
-            }
-
-            @Override
-            public void onError(int code, String message, Object data) {
-                Log.e("ERROR 2", message + ";" + data);
-            }
-        });
+//        api().call("Index.hello", null, new ApiCallback() {
+//            @Override
+//            public void onSuccess(Object data) {
+//                Log.e("SUCCESS 1", String.valueOf(data));
+//            }
+//
+//            @Override
+//            public void onError(int code, String message, Object data) {
+//                Log.e("ERROR 1", message + ";" + data);
+//            }
+//        });
+//
+//        api().call("Index.sudo", "SSS", new ApiCallback() {
+//            @Override
+//            public void onSuccess(Object data) {
+//                Log.e("SUCCESS 2", String.valueOf(data));
+//            }
+//
+//            @Override
+//            public void onError(int code, String message, Object data) {
+//                Log.e("ERROR 2", message + ";" + data);
+//            }
+//        });
     }
 
     class MyAsyncTask extends AsyncTask<String, Void, Bitmap>{

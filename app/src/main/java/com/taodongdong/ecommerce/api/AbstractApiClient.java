@@ -20,6 +20,8 @@ public abstract class AbstractApiClient {
     public static final String RPC_ENTRY = "https://taodongdong.ddltech.top/api/v1/rpc";
     protected static final MediaType JSONType = MediaType.parse("application/json; charset=utf-8");
 
+    protected String token = null;
+
     public AbstractApiClient() {
         okHttpClient = new OkHttpClient();
     }
@@ -93,7 +95,12 @@ public abstract class AbstractApiClient {
     protected JSONObject forAction(String action) throws JSONException {
         JSONObject payload = new JSONObject();
         payload.put("action", action);
+        payload.put("token", token);
         return payload;
+    }
+
+    protected void setToken(String token) {
+        this.token = token;
     }
 
     protected void sendRequest(String action, JSONObject data, ApiCallback<Object> callback) {
