@@ -11,12 +11,17 @@ public class MainApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        instance = this;
         try {
             apiClient = new ApiClient(this);
         } catch (RuntimeException e) {
             Log.e("TAODONGDONG_APPLICATION", "ON CREATE, Can not create api client");
             e.printStackTrace();
         }
+    }
+    static MainApplication instance = null;
+    public static MainApplication getApp(){
+        return instance;
     }
 
     public ApiClient getApiClient() {

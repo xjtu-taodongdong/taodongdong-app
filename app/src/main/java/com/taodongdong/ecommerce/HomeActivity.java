@@ -25,7 +25,9 @@ import com.taodongdong.ecommerce.prouctlistview.ProductListAdapter;
 
 import org.json.JSONException;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class HomeActivity extends AbstractActivity implements View.OnClickListener {
@@ -84,13 +86,15 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
                 HomeActivity.this.api().searchProducts(query, 1, 10, new ApiCallback<Page<ProductInfo>>() {
                     @Override
                     public void onSuccess(Page<ProductInfo> data) throws JSONException {
-
+                        HomeActivity.this.plAdapter.clear();
+                        ProductItem.Factory.convertFromProductInfo(Arrays.asList(data.data), HomeActivity.this.plAdapter);
+                        plAdapter.notifyDataSetChanged();
                         //TODO 处理搜索成功
                     }
 
                     @Override
                     public void onError(int code, String message, Object data) throws JSONException {
-
+                        Toast.makeText(HomeActivity.this,"搜索失败：" + message,Toast.LENGTH_SHORT).show();
                     }
                 });
                 return true;
@@ -207,6 +211,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
                 //设置viewPager的当前Tab
                 mViewpager.setCurrentItem(0);
                 shopImg.setImageResource(R.mipmap.ic_launcher);
+
                 //TODO 更新商品列表
                 break;
             case R.id.id_tab_myshop:
