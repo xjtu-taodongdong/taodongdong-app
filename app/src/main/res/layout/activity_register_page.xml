@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:context=".RegisterPage" >
+    tools:context=".RegisterPage">
 
     <ImageView
         android:id="@+id/imageView2"
@@ -14,106 +14,66 @@
         android:contentDescription="@string/projectIcon"
         app:srcCompat="@drawable/taodongdong" />
 
-    <LinearLayout
-        android:id="@+id/in_name"
+    <EditText
+        android:id="@+id/reg_in_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="100dp"
-        android:orientation="horizontal">
+        android:layout_weight="3"
+        android:ems="10"
+        android:hint="用户名"
+        android:inputType="textPersonName" />
 
-        <TextView
-            android:id="@+id/reg_username"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:layout_weight="3"
-            android:text="@string/username" />
-
-        <EditText
-            android:id="@+id/reg_in_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:autofillHints=""
-            android:ems="10"
-            android:inputType="textPersonName" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/in_password"
+    <EditText
+        android:id="@+id/reg_in_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:orientation="horizontal">
+        android:layout_weight="1"
+        android:ems="10"
+        android:hint="密码"
+        android:importantForAutofill="no"
+        android:inputType="textPassword" />
 
-        <TextView
-            android:id="@+id/reg_password"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="3"
-            android:gravity="center"
-            android:text="@string/password" />
-
-        <EditText
-            android:id="@+id/reg_in_password"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10"
-            android:inputType="textPassword"
-            android:importantForAutofill="no" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/confirm_password"
+    <EditText
+        android:id="@+id/reg_confirm_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:orientation="horizontal">
+        android:layout_weight="1"
+        android:ems="10"
+        android:hint="再次输入密码"
+        android:importantForAutofill="no"
+        android:inputType="textPassword" />
 
-        <TextView
-            android:id="@+id/textView4"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="3"
-            android:gravity="center"
-            android:text="@string/confirmpassword" />
-
-        <EditText
-            android:id="@+id/reg_confirm_password"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10"
-            android:inputType="textPassword"
-            android:importantForAutofill="no" />
-    </LinearLayout>
+    <RadioButton
+        android:id="@+id/register_as_saler"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="成为卖家" />
 
     <LinearLayout
+        style="?android:attr/buttonBarStyle"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="50dp"
-        style="?android:attr/buttonBarStyle"
         android:orientation="horizontal">
 
         <Button
             android:id="@+id/confirm_register"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="50dp"
+            android:layout_marginStart="100dp"
             android:layout_marginLeft="100dp"
-            style="?android:attr/buttonBarButtonStyle"
-            android:textColor="#000000"
-            android:text="@string/confirm_register"
             android:layout_marginEnd="50dp"
-            android:layout_marginStart="100dp" />
+            android:layout_marginRight="50dp"
+            android:text="@string/confirm_register"
+            android:textColor="#000000" />
 
         <Button
-            android:id="@+id/cancel"
+            android:id="@+id/cancel_register"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="?android:attr/buttonBarButtonStyle"
-            android:textColor="#000000"
-            android:text="@string/cancel" />
+            android:text="@string/cancel"
+            android:textColor="#000000" />
     </LinearLayout>
 </LinearLayout>

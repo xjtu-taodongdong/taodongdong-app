@@ -7,11 +7,16 @@ import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.os.AsyncTask;
+import android.widget.Toast;
 
 
 import com.taodongdong.ecommerce.api.ApiCallback;
+import com.taodongdong.ecommerce.api.ApiClient;
+
+import org.json.JSONException;
 
 import java.io.IOException;
 import java.net.URL;
@@ -27,7 +32,8 @@ public class MainActivity extends AbstractActivity {
     private MyAsyncTask mat = null;
     private Button log = null;
     private Button register = null;
-
+    private EditText username = null;
+    private EditText password = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,12 +42,31 @@ public class MainActivity extends AbstractActivity {
         imageView = (ImageView)findViewById(R.id.imageView);
         log = (Button)findViewById(R.id.login);
         register = (Button)findViewById(R.id.register);
-
+        username = (EditText)findViewById(R.id.editText);
+        password = (EditText)findViewById(R.id.editText2);
         log.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this,HomeActivity.class);
-                startActivity(intent);
+                String usr = username.getText().toString();
+                String pwd = password.getText().toString();
+                if(usr.length() >= 6 && pwd.length() >= 6){
+                    api().login(usr, pwd, new ApiCallback<String>() {
+                        @Override
+                        public void onSuccess(String data) throws JSONException {
+                            Intent intent = new Intent(MainActivity.this,HomeActivity.class);
+                            startActivity(intent);
+                        }
+
+                        @Override
+                        public void onError(int code, String message, Object data) throws JSONException {
+                            Toast.makeText(MainActivity.this,"登陆失败:" + message,Toast.LENGTH_SHORT);
+
+                        }
+                    });
+                }else{
+                    Intent intent = new Intent(MainActivity.this,HomeActivity.class);
+                    startActivity(intent);
+                }
             }
         });
         register.setOnClickListener(new View.OnClickListener() {
@@ -97,9 +122,7 @@ public class MainActivity extends AbstractActivity {
              * 将doInBackground（）方法中
              * 返回的bitmap解析的图片设置给ImageView
              * */
-            Log.e("FUCK","okk");
             imageView.setImageBitmap(bitmap);
-            Log.e("FUCK","okkk");
         }
 
         @Override
@@ -132,7 +155,6 @@ public class MainActivity extends AbstractActivity {
                 e.printStackTrace();
             }
             //返回的是解析后的网络图像
-            Log.e("FUCK","ok");
             return bitmap;
         }
     }

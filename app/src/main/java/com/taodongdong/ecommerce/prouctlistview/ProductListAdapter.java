@@ -11,13 +11,17 @@ import android.widget.TextView;
 import com.taodongdong.ecommerce.R;
 import com.taodongdong.ecommerce.prouctlistview.ProductItem;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProductListAdapter extends ArrayAdapter<ProductItem> {
     public ProductListAdapter(Context context,List<ProductItem> objects){
         super(context, R.layout.list_item_layout,objects);
-
     }
+    public ProductListAdapter(Context context){
+        super(context, R.layout.list_item_layout, new ArrayList<ProductItem>());
+    }
+
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent){

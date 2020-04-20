@@ -9,20 +9,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager.widget.ViewPager.*;
 
+import com.taodongdong.ecommerce.api.ApiCallback;
+import com.taodongdong.ecommerce.api.Page;
+import com.taodongdong.ecommerce.api.ProductInfo;
 import com.taodongdong.ecommerce.prouctlistview.ProductItem;
 import com.taodongdong.ecommerce.prouctlistview.ProductListAdapter;
 
+import org.json.JSONException;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class HomeActivity extends AbstractActivity implements View.OnClickListener {
@@ -32,16 +35,16 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
     private ImageButton shopImg;
     private ImageButton myshopImg;
     private ImageButton usrImg;
-    private ListView shopList;
+    private SearchView searchView;
+    private ListView productList;
     private ListView myshopList;
+    private ProductListAdapter plAdapter;
+    private ProductListAdapter myshopAdapter;
 
     //声明ViewPager的适配器
     private PagerAdapter mAdpater;
     //Tab的List
-    private List<View> mTabs = new ArrayList<View>();
-
-    public HomeActivity() {
-    }
+    private List<View> mTabs = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +57,6 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
         initEvents();//初始化事件
 
 
-
         //test/////////////////////////////////////
         Resources res = this.getResources();
         Bitmap bmp= BitmapFactory.decodeResource(res, R.mipmap.ic_launcher);
@@ -63,13 +65,10 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
         for(int i = 0; i < 100;i++){
             list.add(new ProductItem("test",bmp));
         }
-        shopList.setAdapter(new ProductListAdapter(this,list));
-        shopList.setAdapter(new ProductListAdapter(this,list));
+
         //test//////////////////////////////////////
 
 
-
-        //TODO 获取网络数据
 
     }
 
@@ -79,6 +78,30 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
         myshopImg.setOnClickListener(this);
         usrImg.setOnClickListener(this);
 
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                HomeActivity.this.api().searchProducts(query, 1, 10, new ApiCallback<Page<ProductInfo>>() {
+                    @Override
+                    public void onSuccess(Page<ProductInfo> data) throws JSONException {
+
+                        //TODO 处理搜索成功
+                    }
+
+                    @Override
+                    public void onError(int code, String message, Object data) throws JSONException {
+
+                    }
+                });
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+
+                return false;
+            }
+        });
         //添加ViewPager的切换Tab的监听事件
         mViewpager.addOnPageChangeListener(new OnPageChangeListener() {
             @Override
@@ -140,12 +163,17 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
             Log.e("init", "initData: null adpter " + mAdpater.getCount());
         //设置ViewPager的适配器
         mViewpager.setAdapter(mAdpater);
+
+        plAdapter = new ProductListAdapter(this);
+        productList.setAdapter(plAdapter);
+
+        myshopAdapter = new ProductListAdapter(this);
+        myshopList.setAdapter(myshopAdapter);
     }
 
     //初始化控件
     private void initViews() {
         mViewpager = (ViewPager) findViewById(R.id.id_viewpager);
-
         shopImg = (ImageButton) findViewById(R.id.id_tab_shop);
         myshopImg = (ImageButton) findViewById(R.id.id_tab_myshop);
         usrImg = (ImageButton) findViewById(R.id.id_tab_usr);
@@ -155,9 +183,10 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
         View tab1 = inflater.inflate(R.layout.shop, null);
         View tab2 = inflater.inflate(R.layout.myshop, null);
         View tab3 = inflater.inflate(R.layout.usr, null);
-        shopList = (ListView)tab1.findViewById(R.id.id_shop_list);
+        searchView = (SearchView)tab1.findViewById(R.id.search_products);
+        productList = (ListView)tab1.findViewById(R.id.id_shop_list);
         myshopList = (ListView)tab2.findViewById(R.id.id_myshop_list);
-        if(shopList == null){
+        if(productList == null){
             Log.e("init", "initViews: null listview");
         }
 
