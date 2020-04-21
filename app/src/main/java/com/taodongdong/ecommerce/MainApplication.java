@@ -14,6 +14,7 @@ public class MainApplication extends Application {
         instance = this;
         try {
             apiClient = new ApiClient(this);
+            apiClient.initHandlerOnCurrentThread();
         } catch (RuntimeException e) {
             Log.e("TAODONGDONG_APPLICATION", "ON CREATE, Can not create api client");
             e.printStackTrace();

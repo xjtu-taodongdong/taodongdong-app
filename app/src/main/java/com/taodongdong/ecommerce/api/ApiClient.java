@@ -1,6 +1,7 @@
 package com.taodongdong.ecommerce.api;
 
 import android.content.Context;
+import android.os.Handler;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -10,10 +11,26 @@ import org.json.JSONObject;
 import java.io.IOException;
 
 public class ApiClient extends AbstractApiClient {
-    protected  Context context;
+    protected Context context;
+    protected Handler handler;
 
     public ApiClient(Context context) {
         this.context = context;
+    }
+
+    /**
+     * 在当前线程初始化Handler
+     */
+    public void initHandlerOnCurrentThread() {
+        handler = new Handler();
+    }
+
+    /**
+     * 在主线程（UI线程）种执行Runnable
+     * @param task
+     */
+    public void postRunnable(Runnable task) {
+        handler.post(task);
     }
 
     /**
@@ -32,14 +49,14 @@ public class ApiClient extends AbstractApiClient {
                 @Override
                 public void onSuccess(Object data) throws JSONException {
                     JSONObject d = (JSONObject) data;
-                    String token = d.getString("token");
+                    final String token = d.getString("token");
                     setToken(token);
-                    callback.onSuccess(token);
+                    standardOnSuccess(callback, token);
                 }
 
                 @Override
                 public void onError(int code, String message, Object data) throws JSONException {
-                    callback.onError(code, message, data);
+                    standardOnError(callback, code, message, data);
                 }
             });
         } catch (JSONException e) {
@@ -57,12 +74,12 @@ public class ApiClient extends AbstractApiClient {
             public void onSuccess(Object data) throws JSONException {
                 String msg = (String) data;
                 setToken(null);
-                callback.onSuccess(msg);
+                standardOnSuccess(callback, msg);
             }
 
             @Override
             public void onError(int code, String message, Object data) throws JSONException {
-                callback.onError(code, message, data);
+                standardOnError(callback, code, message, data);
             }
         });
     }
@@ -79,12 +96,12 @@ public class ApiClient extends AbstractApiClient {
             sendRequest("User.isRegistered", input, new ApiCallback<Object>() {
                 @Override
                 public void onSuccess(Object data) throws JSONException {
-                    callback.onSuccess((Boolean) data);
+                    standardOnSuccess(callback, (Boolean) data);
                 }
 
                 @Override
                 public void onError(int code, String message, Object data) throws JSONException {
-                    callback.onError(code, message, data);
+                    standardOnError(callback, code, message, data);
                 }
             });
         } catch (JSONException e) {
@@ -109,12 +126,12 @@ public class ApiClient extends AbstractApiClient {
             sendRequest("User.register", input, new ApiCallback<Object>() {
                 @Override
                 public void onSuccess(Object data) throws JSONException {
-                    callback.onSuccess((String) data);
+                    standardOnSuccess(callback, (String) data);
                 }
 
                 @Override
                 public void onError(int code, String message, Object data) throws JSONException {
-                    callback.onError(code, message, data);
+                    standardOnError(callback, code, message, data);
                 }
             });
         } catch (JSONException e) {
@@ -132,12 +149,12 @@ public class ApiClient extends AbstractApiClient {
             @Override
             public void onSuccess(Object data) throws JSONException {
                 String msg = (String) data;
-                callback.onSuccess(msg);
+                standardOnSuccess(callback, msg);
             }
 
             @Override
             public void onError(int code, String message, Object data) throws JSONException {
-                callback.onError(code, message, data);
+                standardOnError(callback, code, message, data);
             }
         });
     }
@@ -151,7 +168,7 @@ public class ApiClient extends AbstractApiClient {
             @Override
             public void onSuccess(Object data) throws JSONException {
                 if (data == null) {
-                    callback.onSuccess(null);
+                    standardOnSuccess(callback, null);
                 } else {
                     JSONObject d = (JSONObject) data;
                     UserInfo u = new UserInfo();
@@ -159,13 +176,13 @@ public class ApiClient extends AbstractApiClient {
                     u.username = d.getString("username");
                     u.authority = d.getInt("authority");
                     u.balance = d.getInt("balance");
-                    callback.onSuccess(u);
+                    standardOnSuccess(callback, u);
                 }
             }
 
             @Override
             public void onError(int code, String message, Object data) throws JSONException {
-                callback.onError(code, message, data);
+                standardOnError(callback, code, message, data);
             }
         });
     }
@@ -183,12 +200,12 @@ public class ApiClient extends AbstractApiClient {
             sendRequest("Store.setUpStore", input, new ApiCallback<Object>() {
                 @Override
                 public void onSuccess(Object data) throws JSONException {
-                    callback.onSuccess((String) data);
+                    standardOnSuccess(callback, (String) data);
                 }
 
                 @Override
                 public void onError(int code, String message, Object data) throws JSONException {
-                    callback.onError(code, message, data);
+                    standardOnError(callback, code, message, data);
                 }
             });
         } catch (JSONException e) {
@@ -210,12 +227,12 @@ public class ApiClient extends AbstractApiClient {
                 s.id = d.getInt("id");
                 s.merchantUserId = d.getInt("merchant_user_id");
                 s.storeName = d.getString("store_name");
-                callback.onSuccess(s);
+                standardOnSuccess(callback, s);
             }
 
             @Override
             public void onError(int code, String message, Object data) throws JSONException {
-                callback.onError(code, message, data);
+                standardOnError(callback, code, message, data);
             }
         });
     }
@@ -247,12 +264,12 @@ public class ApiClient extends AbstractApiClient {
                     p.productPrice = d.getInt("product_price");
                     p.productAmount = d.getInt("product_amount");
                     p.productDescription = d.getString("product_description");
-                    callback.onSuccess(p);
+                    standardOnSuccess(callback, p);
                 }
 
                 @Override
                 public void onError(int code, String message, Object data) throws JSONException {
-                    callback.onError(code, message, data);
+                    standardOnError(callback, code, message, data);
                 }
             });
         } catch (JSONException e) {
@@ -279,12 +296,12 @@ public class ApiClient extends AbstractApiClient {
                     p.productPrice = d.getInt("product_price");
                     p.productAmount = d.getInt("product_amount");
                     p.productDescription = d.getString("product_description");
-                    callback.onSuccess(p);
+                    standardOnSuccess(callback, p);
                 }
 
                 @Override
                 public void onError(int code, String message, Object data) throws JSONException {
-                    callback.onError(code, message, data);
+                    standardOnError(callback, code, message, data);
                 }
             });
         } catch (JSONException e) {
@@ -328,12 +345,12 @@ public class ApiClient extends AbstractApiClient {
                         p.productDescription = dp.getString("product_description");
                         pl[i] = p;
                     }
-                    callback.onSuccess(r);
+                    standardOnSuccess(callback, r);
                 }
 
                 @Override
                 public void onError(int code, String message, Object data) throws JSONException {
-                    callback.onError(code, message, data);
+                    standardOnError(callback, code, message, data);
                 }
             });
         } catch (JSONException e) {
@@ -365,12 +382,12 @@ public class ApiClient extends AbstractApiClient {
                     p.productPrice = d.getInt("product_price");
                     p.productAmount = d.getInt("product_amount");
                     p.productDescription = d.getString("product_description");
-                    callback.onSuccess(p);
+                    standardOnSuccess(callback, p);
                 }
 
                 @Override
                 public void onError(int code, String message, Object data) throws JSONException {
-                    callback.onError(code, message, data);
+                    standardOnError(callback, code, message, data);
                 }
             });
         } catch (JSONException e) {
@@ -404,12 +421,12 @@ public class ApiClient extends AbstractApiClient {
                     o.productDescription = d.getString("product_description");
                     o.productImage = d.getString("product_image");
                     o.orderStatus = d.getInt("order_status");
-                    callback.onSuccess(o);
+                    standardOnSuccess(callback, o);
                 }
 
                 @Override
                 public void onError(int code, String message, Object data) throws JSONException {
-                    callback.onError(code, message, data);
+                    standardOnError(callback, code, message, data);
                 }
             });
         } catch (JSONException e) {
@@ -430,12 +447,12 @@ public class ApiClient extends AbstractApiClient {
             sendRequest("Store.payOrder", input, new ApiCallback<Object>() {
                 @Override
                 public void onSuccess(Object data) throws JSONException {
-                    callback.onSuccess((String) data);
+                    standardOnSuccess(callback, (String) data);
                 }
 
                 @Override
                 public void onError(int code, String message, Object data) throws JSONException {
-                    callback.onError(code, message, data);
+                    standardOnError(callback, code, message, data);
                 }
             });
         } catch (JSONException e) {
@@ -456,12 +473,12 @@ public class ApiClient extends AbstractApiClient {
             sendRequest("Store.sendOrder", input, new ApiCallback<Object>() {
                 @Override
                 public void onSuccess(Object data) throws JSONException {
-                    callback.onSuccess((String) data);
+                    standardOnSuccess(callback, (String) data);
                 }
 
                 @Override
                 public void onError(int code, String message, Object data) throws JSONException {
-                    callback.onError(code, message, data);
+                    standardOnError(callback, code, message, data);
                 }
             });
         } catch (JSONException e) {
@@ -482,12 +499,12 @@ public class ApiClient extends AbstractApiClient {
             sendRequest("Store.confirmOrder", input, new ApiCallback<Object>() {
                 @Override
                 public void onSuccess(Object data) throws JSONException {
-                    callback.onSuccess((String) data);
+                    standardOnSuccess(callback, (String) data);
                 }
 
                 @Override
                 public void onError(int code, String message, Object data) throws JSONException {
-                    callback.onError(code, message, data);
+                    standardOnError(callback, code, message, data);
                 }
             });
         } catch (JSONException e) {
@@ -495,23 +512,75 @@ public class ApiClient extends AbstractApiClient {
         }
     }
 
+    public void showToast(final String message) {
+        postRunnable(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(context, "网络异常：" + message, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    /**
+     * 调用callback的onSuccess
+     * @param callback
+     * @param data
+     * @param <T>
+     */
+    protected <T extends Object> void standardOnSuccess(final ApiCallback<T> callback, final T data) {
+        postRunnable(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    callback.onSuccess(data);
+                } catch (JSONException e) {
+                    onHandleCallbackJSONException(e);
+                }
+            }
+        });
+    }
+
+    /**
+     * 调用callback的onError
+     * @param callback
+     * @param code
+     * @param message
+     * @param data
+     */
+    protected void standardOnError(final ApiCallback<? extends Object> callback, final int code, final String message, final Object data) {
+        postRunnable(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                     callback.onError(code, message, data);
+                } catch (JSONException e) {
+                    onHandleCallbackJSONException(e);
+                }
+            }
+        });
+    }
+
     @Override
     public void onIOException(IOException e) {
-        Toast.makeText(context, "网络异常：" + e.getMessage(), Toast.LENGTH_LONG).show();
+        showToast(e.getMessage());
     }
 
     @Override
     public void onRequestJSONException(JSONException e) {
-        Toast.makeText(context, "请求体JSON异常：" + e.getMessage(), Toast.LENGTH_LONG).show();
+        showToast(e.getMessage());
     }
 
     @Override
     public void onResponseJSONException(JSONException e) {
-        Toast.makeText(context, "响应体JSON异常：" + e.getMessage(), Toast.LENGTH_LONG).show();
+        showToast(e.getMessage());
     }
 
     @Override
     public void onResponseFormatInvalid(JSONObject response, JSONException e) {
-        Toast.makeText(context, "响应体JSON格式不正确：" + e.getMessage(), Toast.LENGTH_LONG).show();
+        showToast(e.getMessage());
+    }
+
+    public void onHandleCallbackJSONException(JSONException e) {
+        showToast(e.getMessage());
     }
 }
