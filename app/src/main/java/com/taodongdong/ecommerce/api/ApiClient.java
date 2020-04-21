@@ -516,7 +516,7 @@ public class ApiClient extends AbstractApiClient {
         postRunnable(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(context, "网络异常：" + message, Toast.LENGTH_LONG).show();
+                Toast.makeText(context, message, Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -562,25 +562,25 @@ public class ApiClient extends AbstractApiClient {
 
     @Override
     public void onIOException(IOException e) {
-        showToast(e.getMessage());
+        showToast("网络异常：" + e.getMessage());
     }
 
     @Override
     public void onRequestJSONException(JSONException e) {
-        showToast(e.getMessage());
+        showToast("请求体JSON异常" + e.getMessage());
     }
 
     @Override
     public void onResponseJSONException(JSONException e) {
-        showToast(e.getMessage());
+        showToast("响应体JSON异常" + e.getMessage());
     }
 
     @Override
     public void onResponseFormatInvalid(JSONObject response, JSONException e) {
-        showToast(e.getMessage());
+        showToast("响应体格式化JSON异常：" + e.getMessage());
     }
 
     public void onHandleCallbackJSONException(JSONException e) {
-        showToast(e.getMessage());
+        showToast("回调JSON异常" + e.getMessage());
     }
 }
