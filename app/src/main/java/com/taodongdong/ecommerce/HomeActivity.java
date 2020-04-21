@@ -94,7 +94,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
 
                     @Override
                     public void onError(int code, String message, Object data) throws JSONException {
-                        Toast.makeText(HomeActivity.this,"搜索失败：" + message,Toast.LENGTH_SHORT).show();
+                        api().showToast("搜索失败");
                     }
                 });
                 return true;
@@ -207,7 +207,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
         switch (v.getId()) {
             //TODO 添加图标
             case R.id.id_tab_shop:
-                Toast.makeText(this," tab 1",Toast.LENGTH_SHORT).show();
+                api().showToast(" tab 1");
                 //设置viewPager的当前Tab
                 mViewpager.setCurrentItem(0);
                 shopImg.setImageResource(R.mipmap.ic_launcher);
@@ -215,13 +215,13 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
                 //TODO 更新商品列表
                 break;
             case R.id.id_tab_myshop:
-                Toast.makeText(this," tab 2",Toast.LENGTH_SHORT).show();
+                api().showToast(" tab 2");
                 mViewpager.setCurrentItem(1);
                 myshopImg.setImageResource(R.mipmap.ic_launcher);
                 //TODO 更新自己的商品列表
                 break;
             case R.id.id_tab_usr:
-                Toast.makeText(this," tab 3",Toast.LENGTH_SHORT).show();
+                api().showToast(" tab 3");
                 mViewpager.setCurrentItem(2);
                 usrImg.setImageResource(R.mipmap.ic_launcher);
                 break;
