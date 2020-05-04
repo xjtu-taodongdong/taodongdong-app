@@ -73,28 +73,27 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="6"
-            style="?android:attr/buttonBarStyle"
-            android:orientation="horizontal">
+            android:layout_weight="1"
+            android:orientation="vertical">
 
             <Button
                 android:id="@+id/purchase"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
                 style="?android:attr/buttonBarButtonStyle"
-                android:textColor="#000000"
-                android:text="@string/purchase" />
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/purchase"
+                android:textColor="#000000" />
 
             <Button
-                android:id="@+id/backToProductList"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                style="?android:attr/buttonBarButtonStyle"
-                android:textColor="#000000"
-                android:text="@string/back" />
+                android:id="@+id/button"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/modify"
+                android:layout_weight="1" />
+
         </LinearLayout>
+
     </LinearLayout>
 
 </LinearLayout>

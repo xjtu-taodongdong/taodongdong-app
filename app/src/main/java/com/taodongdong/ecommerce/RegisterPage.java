@@ -30,11 +30,11 @@ public class RegisterPage extends AbstractActivity implements View.OnClickListen
             String pwd = password.getText().toString();
             String pwd_cfm = password_cfm.getText().toString();
             if(usr.length() < 6){
-                Toast.makeText(RegisterPage.this,"用户名太短",Toast.LENGTH_SHORT).show();
+                api().showToast("用户名太短");
                 return;
             }
             if(pwd.length() < 6){
-                Toast.makeText(RegisterPage.this,"密码太短",Toast.LENGTH_SHORT).show();
+                api().showToast("密码太短");
                 return;
             }
             if(pwd.equals(pwd_cfm)){

@@ -20,6 +20,9 @@ import androidx.viewpager.widget.ViewPager.*;
 import com.taodongdong.ecommerce.api.ApiCallback;
 import com.taodongdong.ecommerce.api.Page;
 import com.taodongdong.ecommerce.api.ProductInfo;
+import com.taodongdong.ecommerce.api.StoreInfo;
+import com.taodongdong.ecommerce.api.Errors;
+import com.taodongdong.ecommerce.api.UserInfo;
 import com.taodongdong.ecommerce.prouctlistview.ProductItem;
 import com.taodongdong.ecommerce.prouctlistview.ProductListAdapter;
 
@@ -182,7 +185,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
         myshopImg = (ImageButton) findViewById(R.id.id_tab_myshop);
         usrImg = (ImageButton) findViewById(R.id.id_tab_usr);
 
-        //获取到四个Tab
+        //获取到三个Tab
         LayoutInflater inflater = LayoutInflater.from(this);
         View tab1 = inflater.inflate(R.layout.shop, null);
         View tab2 = inflater.inflate(R.layout.myshop, null);
@@ -216,7 +219,29 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
                 break;
             case R.id.id_tab_myshop:
                 api().showToast(" tab 2");
-                mViewpager.setCurrentItem(1);
+
+                api().getMyStoreInfo(new ApiCallback<StoreInfo>() {
+                    @Override
+                    public void onSuccess(StoreInfo data) throws JSONException {
+                        mViewpager.setCurrentItem(1);
+                        //还需api来实现
+                    }
+
+                    @Override
+                    public void onError(int code, String message, Object data) throws JSONException {
+                        switch (code){
+                            case Errors.NOT_LOGIN:
+                                api().showToast("NOT_LOGIN");
+                                break;
+                            case Errors.NOT_MERCHANT:
+                                api().showToast("NOT_MERCHANT");
+                                break;
+                            case Errors.NO_STORE:
+                                api().showToast("NO_STORE");
+                                break;
+                        }
+                    }
+                });
                 myshopImg.setImageResource(R.mipmap.ic_launcher);
                 //TODO 更新自己的商品列表
                 break;
