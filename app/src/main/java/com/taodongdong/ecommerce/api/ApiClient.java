@@ -238,6 +238,55 @@ public class ApiClient extends AbstractApiClient {
     }
 
     /**
+     * 获取某个商铺下的所有商品（分页）
+     * @param storeId 商铺ID
+     * @param page  第几页
+     * @param perPage 每页多少元素
+     * @param callback 回调参数为这一页所有的商品信息
+     */
+    public void getAllProducts(int storeId, int page, int perPage,
+                               final ApiCallback<Page<ProductInfo>> callback) {
+        try {
+            JSONObject input = new JSONObject();
+            input.put("store_id", storeId);
+            input.put("page", page);
+            input.put("count", perPage);
+            sendRequest("Store.getAllProducts", input, new ApiCallback<Object>() {
+                @Override
+                public void onSuccess(Object data) throws JSONException {
+                    JSONObject d = (JSONObject) data;
+                    Page r = new Page<ProductInfo>();
+                    int n = 0;
+                    r.total = d.getInt("total");
+                    r.perPage = n = d.getInt("per_page");
+                    r.currentPage = d.getInt("current_page");
+                    r.lastPage = d.getInt("last_page");
+                    ProductInfo[] pl = new ProductInfo[n];
+                    JSONArray arr = d.getJSONArray("data");
+                    for (int i = 0; i < n; i++) {
+                        ProductInfo p = new ProductInfo();
+                        JSONObject dp = arr.getJSONObject(i);
+                        p.id = dp.getInt("id");
+                        p.productName = dp.getString("product_name");
+                        p.productPrice = dp.getInt("product_price");
+                        p.productAmount = dp.getInt("product_amount");
+                        p.productDescription = dp.getString("product_description");
+                        pl[i] = p;
+                    }
+                    standardOnSuccess(callback, r);
+                }
+
+                @Override
+                public void onError(int code, String message, Object data) throws JSONException {
+                    standardOnError(callback, code, message, data);
+                }
+            });
+        } catch (JSONException e) {
+            onRequestJSONException(e);
+        }
+    }
+
+    /**
      * 创建新商品
      * 错误列表 NO_STORE
      * @param productName 商品名
