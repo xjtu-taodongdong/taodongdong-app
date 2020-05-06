@@ -30,11 +30,11 @@ public class RegisterPage extends AbstractActivity implements View.OnClickListen
             String pwd = password.getText().toString();
             String pwd_cfm = password_cfm.getText().toString();
             if(usr.length() < 6){
-                Toast.makeText(RegisterPage.this,"用户名太短",Toast.LENGTH_SHORT).show();
+                api().showToast("用户名太短");
                 return;
             }
             if(pwd.length() < 6){
-                Toast.makeText(RegisterPage.this,"密码太短",Toast.LENGTH_SHORT).show();
+                api().showToast("密码太短");
                 return;
             }
             if(pwd.equals(pwd_cfm)){
@@ -42,17 +42,17 @@ public class RegisterPage extends AbstractActivity implements View.OnClickListen
                 api().register(usr, pwd, authority, new ApiCallback<String>() {
                     @Override
                     public void onSuccess(String data) throws JSONException {
-                        Toast.makeText(RegisterPage.this,"注册成功",Toast.LENGTH_SHORT).show();
+                        api().showToast("注册成功");
                         finish();
                     }
 
                     @Override
                     public void onError(int code, String message, Object data) throws JSONException {
-                        Toast.makeText(RegisterPage.this,"注册失败："+message,Toast.LENGTH_SHORT).show();
+                        api().showToast("注册失败");
                     }
                 });
             }else{
-                Toast.makeText(this,"两次输入的密码不一致",Toast.LENGTH_SHORT).show();
+                api().showToast("两次输入的密码不一致");
             }
 
         }
@@ -80,6 +80,7 @@ public class RegisterPage extends AbstractActivity implements View.OnClickListen
                 }
             }
         });
+        register.setOnClickListener(this);
         cancel.setOnClickListener(this);
 
     }

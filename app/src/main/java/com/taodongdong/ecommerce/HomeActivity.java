@@ -20,6 +20,9 @@ import androidx.viewpager.widget.ViewPager.*;
 import com.taodongdong.ecommerce.api.ApiCallback;
 import com.taodongdong.ecommerce.api.Page;
 import com.taodongdong.ecommerce.api.ProductInfo;
+import com.taodongdong.ecommerce.api.StoreInfo;
+import com.taodongdong.ecommerce.api.Errors;
+import com.taodongdong.ecommerce.api.UserInfo;
 import com.taodongdong.ecommerce.prouctlistview.ProductItem;
 import com.taodongdong.ecommerce.prouctlistview.ProductListAdapter;
 
@@ -94,7 +97,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
 
                     @Override
                     public void onError(int code, String message, Object data) throws JSONException {
-                        Toast.makeText(HomeActivity.this,"搜索失败：" + message,Toast.LENGTH_SHORT).show();
+                        api().showToast("搜索失败");
                     }
                 });
                 return true;
@@ -182,7 +185,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
         myshopImg = (ImageButton) findViewById(R.id.id_tab_myshop);
         usrImg = (ImageButton) findViewById(R.id.id_tab_usr);
 
-        //获取到四个Tab
+        //获取到三个Tab
         LayoutInflater inflater = LayoutInflater.from(this);
         View tab1 = inflater.inflate(R.layout.shop, null);
         View tab2 = inflater.inflate(R.layout.myshop, null);
@@ -207,7 +210,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
         switch (v.getId()) {
             //TODO 添加图标
             case R.id.id_tab_shop:
-                Toast.makeText(this," tab 1",Toast.LENGTH_SHORT).show();
+                api().showToast(" tab 1");
                 //设置viewPager的当前Tab
                 mViewpager.setCurrentItem(0);
                 shopImg.setImageResource(R.mipmap.ic_launcher);
@@ -215,13 +218,35 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
                 //TODO 更新商品列表
                 break;
             case R.id.id_tab_myshop:
-                Toast.makeText(this," tab 2",Toast.LENGTH_SHORT).show();
-                mViewpager.setCurrentItem(1);
+                api().showToast(" tab 2");
+
+                api().getMyStoreInfo(new ApiCallback<StoreInfo>() {
+                    @Override
+                    public void onSuccess(StoreInfo data) throws JSONException {
+                        mViewpager.setCurrentItem(1);
+                        //还需api来实现
+                    }
+
+                    @Override
+                    public void onError(int code, String message, Object data) throws JSONException {
+                        switch (code){
+                            case Errors.NOT_LOGIN:
+                                api().showToast("NOT_LOGIN");
+                                break;
+                            case Errors.NOT_MERCHANT:
+                                api().showToast("NOT_MERCHANT");
+                                break;
+                            case Errors.NO_STORE:
+                                api().showToast("NO_STORE");
+                                break;
+                        }
+                    }
+                });
                 myshopImg.setImageResource(R.mipmap.ic_launcher);
                 //TODO 更新自己的商品列表
                 break;
             case R.id.id_tab_usr:
-                Toast.makeText(this," tab 3",Toast.LENGTH_SHORT).show();
+                api().showToast(" tab 3");
                 mViewpager.setCurrentItem(2);
                 usrImg.setImageResource(R.mipmap.ic_launcher);
                 break;

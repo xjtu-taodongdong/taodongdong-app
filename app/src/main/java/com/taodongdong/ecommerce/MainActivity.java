@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.graphics.BitmapFactory;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 
 import com.taodongdong.ecommerce.api.ApiCallback;
 import com.taodongdong.ecommerce.api.ApiClient;
+import com.taodongdong.ecommerce.api.Errors;
 
 import org.json.JSONException;
 
@@ -49,24 +51,29 @@ public class MainActivity extends AbstractActivity {
             public void onClick(View v) {
                 String usr = username.getText().toString();
                 String pwd = password.getText().toString();
-                if(usr.length() >= 6 && pwd.length() >= 6){
-                    api().login(usr, pwd, new ApiCallback<String>() {
-                        @Override
-                        public void onSuccess(String data) throws JSONException {
-                            Intent intent = new Intent(MainActivity.this,HomeActivity.class);
-                            startActivity(intent);
+                api().login(usr, pwd, new ApiCallback<String>() {
+                    @Override
+                    public void onSuccess(String data) throws JSONException {
+                        Intent intent = new Intent(MainActivity.this,HomeActivity.class);
+                        startActivity(intent);
+                    }
+                    @Override
+                    public void onError(int code, String message, Object data) throws JSONException {
+                        switch (code){
+                            case Errors.NO_SUCH_USER:
+                                api().showToast("无此用户");
+                                break;
+                            case Errors.PASSWORD_ERROR:
+                                api().showToast("密码错误");
+                                break;
+                            case Errors.CANT_CREATE_HASH:
+                                api().showToast("无法建立哈希");
+                                break;
                         }
 
-                        @Override
-                        public void onError(int code, String message, Object data) throws JSONException {
-                            Toast.makeText(MainActivity.this,"登陆失败:" + message,Toast.LENGTH_SHORT);
+                    }
+                });
 
-                        }
-                    });
-                }else{
-                    Intent intent = new Intent(MainActivity.this,HomeActivity.class);
-                    startActivity(intent);
-                }
             }
         });
         register.setOnClickListener(new View.OnClickListener() {
