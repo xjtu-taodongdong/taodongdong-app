@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SearchView;
@@ -45,6 +46,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
     private ListView myshopList;
     private ProductListAdapter plAdapter;
     private ProductListAdapter myshopAdapter;
+    private Button put_on_sale;
 
     //声明ViewPager的适配器
     private PagerAdapter mAdpater;
@@ -82,6 +84,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
         shopImg.setOnClickListener(this);
         myshopImg.setOnClickListener(this);
         usrImg.setOnClickListener(this);
+
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -184,6 +187,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
         shopImg = (ImageButton) findViewById(R.id.id_tab_shop);
         myshopImg = (ImageButton) findViewById(R.id.id_tab_myshop);
         usrImg = (ImageButton) findViewById(R.id.id_tab_usr);
+        put_on_sale = (Button) findViewById(R.id.put_on_sale);
 
         //获取到三个Tab
         LayoutInflater inflater = LayoutInflater.from(this);
@@ -225,6 +229,12 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
                     public void onSuccess(StoreInfo data) throws JSONException {
                         mViewpager.setCurrentItem(1);
                         //还需api来实现
+                        put_on_sale.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                //点击后可以用对话框的方式来但是也是要写一个view传给对话框
+                            }
+                        });
                     }
 
                     @Override
