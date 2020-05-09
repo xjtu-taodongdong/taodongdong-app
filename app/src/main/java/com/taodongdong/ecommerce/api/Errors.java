@@ -24,4 +24,7 @@ public class Errors {
     public final static int NOT_OWNER_PURCHASER = 13004;
     public final static int INVALID_STATUS = 13005;
     public final static int NO_ENOUGH_MONEY = 13006;
+
+    public final static int NO_INPUT_FILE = 14000;
+    public final static int NOT_IMAGE = 14001;
 }

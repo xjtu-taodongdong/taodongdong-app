@@ -8,6 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
 
 public class ApiClient extends AbstractApiClient {
@@ -432,6 +433,35 @@ public class ApiClient extends AbstractApiClient {
                     p.productAmount = d.getInt("product_amount");
                     p.productDescription = d.getString("product_description");
                     standardOnSuccess(callback, p);
+                }
+
+                @Override
+                public void onError(int code, String message, Object data) throws JSONException {
+                    standardOnError(callback, code, message, data);
+                }
+            });
+        } catch (JSONException e) {
+            onRequestJSONException(e);
+        }
+    }
+
+    /**
+     * 上传商品图片（会同步保存至数据库）
+     * 错误列表 NO_SUCH_PRODUCT NOT_OWNER_MERCHANT NO_INPUT_FILE NOT_IMAGE
+     * @param productId 商品ID
+     * @param image 图片文件
+     * @param callback 回调参数是该图片的网络地址
+     */
+    public void uploadImage(int productId, File image, final ApiCallback<String> callback) {
+        try {
+            JSONObject extra = new JSONObject();
+            extra.put("id", productId);
+            sendRequest("Product.uploadImage", image, extra, new ApiCallback<Object>() {
+                @Override
+                public void onSuccess(Object data) throws JSONException {
+                    JSONObject d = (JSONObject) data;
+                    String url = d.getString("url");
+                    standardOnSuccess(callback, url);
                 }
 
                 @Override
