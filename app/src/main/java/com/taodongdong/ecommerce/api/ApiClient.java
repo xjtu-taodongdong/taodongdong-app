@@ -188,31 +188,31 @@ public class ApiClient extends AbstractApiClient {
         });
     }
 
-    /**
-     * 创建商铺
-     * 错误列表 NOT_LOGIN ALREADY_HAVE_STORE
-     * @param storeName 商铺名称
-     * @param callback 回调参数固定为“创建商铺成功”
-     */
-    public void setUpStore(String storeName, final ApiCallback<String> callback) {
-        try {
-            JSONObject input = new JSONObject();
-            input.put("store_name", storeName);
-            sendRequest("Store.setUpStore", input, new ApiCallback<Object>() {
-                @Override
-                public void onSuccess(Object data) throws JSONException {
-                    standardOnSuccess(callback, (String) data);
-                }
+    // /**
+    //  * 创建商铺
+    //  * 错误列表 NOT_LOGIN ALREADY_HAVE_STORE
+    //  * @param storeName 商铺名称
+    //  * @param callback 回调参数固定为“创建商铺成功”
+    //  */
+    // public void setUpStore(String storeName, final ApiCallback<String> callback) {
+    //     try {
+    //         JSONObject input = new JSONObject();
+    //         input.put("store_name", storeName);
+    //         sendRequest("Store.setUpStore", input, new ApiCallback<Object>() {
+    //             @Override
+    //             public void onSuccess(Object data) throws JSONException {
+    //                 standardOnSuccess(callback, (String) data);
+    //             }
 
-                @Override
-                public void onError(int code, String message, Object data) throws JSONException {
-                    standardOnError(callback, code, message, data);
-                }
-            });
-        } catch (JSONException e) {
-            onRequestJSONException(e);
-        }
-    }
+    //             @Override
+    //             public void onError(int code, String message, Object data) throws JSONException {
+    //                 standardOnError(callback, code, message, data);
+    //             }
+    //         });
+    //     } catch (JSONException e) {
+    //         onRequestJSONException(e);
+    //     }
+    // }
 
     /**
      * 获取我的商铺信息
