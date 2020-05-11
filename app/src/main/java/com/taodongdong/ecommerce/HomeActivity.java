@@ -1,4 +1,5 @@
 package com.taodongdong.ecommerce;
+import android.app.AlertDialog;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,6 +14,8 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Toast;
+import android.widget.EditText;
+
 
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
@@ -227,12 +230,28 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
                 api().getMyStoreInfo(new ApiCallback<StoreInfo>() {
                     @Override
                     public void onSuccess(StoreInfo data) throws JSONException {
+                        final StoreInfo s = data;
                         mViewpager.setCurrentItem(1);
                         //还需api来实现
                         put_on_sale.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 //点击后可以用对话框的方式来但是也是要写一个view传给对话框
+                                HomeActivity.this.myDialog();//上架商品
+                                api().getAllProducts(s.id, 1, 10, new ApiCallback<Page<ProductInfo>>() {
+                                    @Override
+                                    public void onSuccess(Page<ProductInfo> data) throws JSONException {
+                                        HomeActivity.this.myshopAdapter.clear();
+                                        ProductItem.Factory.convertFromProductInfo(Arrays.asList(data.data), HomeActivity.this.myshopAdapter);
+                                        myshopAdapter.notifyDataSetChanged();
+                                    }
+
+                                    @Override
+                                    public void onError(int code, String message, Object data) throws JSONException {
+
+                                    }
+                                });//重新获取商品所有的信息
+
                             }
                         });
                     }
@@ -270,5 +289,67 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
         myshopImg.setImageResource(R.mipmap.ic_launcher);
         usrImg.setImageResource(R.mipmap.ic_launcher);
 
+    }
+
+    //上架商品和修改商品时的对话弹窗
+    protected void myDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        final AlertDialog dialog = builder.create();
+        View dialogView = View.inflate(this, R.layout.fill_product_detail, null);
+        dialog.setView(dialogView);
+        dialog.show();
+
+        final EditText product_name = dialogView.findViewById(R.id.fill_product_name);
+        final EditText product_price = dialogView.findViewById(R.id.product_unit_price);
+        final EditText product_amount = dialogView.findViewById(R.id.product_amount);
+        final EditText product_description = dialogView.findViewById(R.id.product_description);
+
+        Button confirm = dialogView.findViewById(R.id.confirm_product_info);
+        Button btn_cancel = dialogView.findViewById(R.id.cancel_product_info);
+        Button upload_img = dialogView.findViewById(R.id.upload_img);
+
+        upload_img.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //上传商品的图片，要调用系统的接口
+            }
+        });
+
+
+
+        confirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String name,description,price,amount;
+                name = product_name.getText().toString();
+                price = product_price.getText().toString();
+                amount = product_amount.getText().toString();
+                description = product_description.getText().toString();
+                if (name.equals("") || price.equals("") || amount.equals("") || description.equals("")) {
+                    api().showToast("商品名，价格，数量，描述均不能为空");
+                }else {
+                    api().createProduct(name, Integer.parseInt(price), Integer.parseInt(amount), description, new ApiCallback<ProductInfo>() {
+                        @Override
+                        public void onSuccess(ProductInfo data) throws JSONException {
+                            api().showToast("上架商品成功");
+                            dialog.dismiss();
+                        }
+
+                        @Override
+                        public void onError(int code, String message, Object data) throws JSONException {
+                            api().showToast("上架商品失败");
+                        }
+                    });
+                }
+
+            }
+        });
+
+        btn_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
     }
 }

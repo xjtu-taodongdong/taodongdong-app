@@ -14,8 +14,13 @@
     <string name="remaining">剩余:</string>
     <string name="purchase">购买</string>
     <string name="back">返回</string>
-    <string name="unknown">unknown</string>>
-    <string name="modify">修改</string>>
-    <string name="put_on_sale">上架商品</string>>
-    <string name="pull_off_shelves">下架商品</string>>
+    <string name="unknown">unknown</string>
+    <string name="modify">修改</string>
+    <string name="put_on_sale">上架商品</string>
+    <string name="pull_off_shelves">下架商品</string>
+    <string name="upload_img">上传图片</string>
+    <string name="product_unit_price">商品单价</string>
+    <string name="product_amount">商品数量</string>
+    <string name="product_description">商品描述</string>
+    <string name="confirm_product_info">确定</string>
 </resources>
