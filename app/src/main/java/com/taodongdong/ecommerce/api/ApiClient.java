@@ -188,6 +188,42 @@ public class ApiClient extends AbstractApiClient {
         });
     }
 
+    /**
+     * 给当前账户充值
+     * 错误列表 NOT_LOGIN
+     * @param amount 充值量（可以是负数）
+     * @param callback 回调参数为当前用户信息或者null
+     */
+    public void recharge(int amount, final ApiCallback<UserInfo> callback) {
+        try {
+            JSONObject input = new JSONObject();
+            input.put("amount", amount);
+            sendRequest("User.recharge", input, new ApiCallback<Object>() {
+                @Override
+                public void onSuccess(Object data) throws JSONException {
+                    if (data == null) {
+                        standardOnSuccess(callback, null);
+                    } else {
+                        JSONObject d = (JSONObject) data;
+                        UserInfo u = new UserInfo();
+                        u.id = d.getInt("id");
+                        u.username = d.getString("username");
+                        u.authority = d.getInt("authority");
+                        u.balance = d.getInt("balance");
+                        standardOnSuccess(callback, u);
+                    }
+                }
+
+                @Override
+                public void onError(int code, String message, Object data) throws JSONException {
+                    standardOnError(callback, code, message, data);
+                }
+            });
+        } catch (JSONException e) {
+            onRequestJSONException(e);
+        }
+    }
+
     // /**
     //  * 创建商铺
     //  * 错误列表 NOT_LOGIN ALREADY_HAVE_STORE
@@ -488,18 +524,7 @@ public class ApiClient extends AbstractApiClient {
                 @Override
                 public void onSuccess(Object data) throws JSONException {
                     JSONObject d = (JSONObject) data;
-                    OrderInfo o = new OrderInfo();
-                    o.id = d.getInt("id");
-                    o.productId = d.getInt("product_id");
-                    o.storeId = d.getInt("store_id");
-                    o.purchaserUserId = d.getInt("purchaser_user_id");
-                    o.merchantUserId = d.getInt("merchant_user_id");
-                    o.productName = d.getString("product_name");
-                    o.productPrice = d.getInt("product_price");
-                    o.productAmount = d.getInt("product_amount");
-                    o.productDescription = d.getString("product_description");
-                    o.productImage = d.getString("product_image");
-                    o.orderStatus = d.getInt("order_status");
+                    OrderInfo o = OrderInfo.fromJSONObject(d);
                     standardOnSuccess(callback, o);
                 }
 
@@ -579,6 +604,92 @@ public class ApiClient extends AbstractApiClient {
                 @Override
                 public void onSuccess(Object data) throws JSONException {
                     standardOnSuccess(callback, (String) data);
+                }
+
+                @Override
+                public void onError(int code, String message, Object data) throws JSONException {
+                    standardOnError(callback, code, message, data);
+                }
+            });
+        } catch (JSONException e) {
+            onRequestJSONException(e);
+        }
+    }
+
+    /**
+     * 获取商家的订单列表
+     * 错误列表 NOT_LOGIN NO_STORE
+     * @param page  第几页
+     * @param perPage 每页多少元素
+     * @param callback 回调参数为这一页所有的订单信息
+     */
+    public void getMerchantOrders(int page, int perPage,
+                               final ApiCallback<Page<OrderInfo>> callback) {
+        try {
+            JSONObject input = new JSONObject();
+            input.put("page", page);
+            input.put("count", perPage);
+            sendRequest("Store.getMerchantOrders", input, new ApiCallback<Object>() {
+                @Override
+                public void onSuccess(Object data) throws JSONException {
+                    JSONObject d = (JSONObject) data;
+                    Page r = new Page<ProductInfo>();
+                    int n = 0;
+                    r.total = d.getInt("total");
+                    r.perPage = n = d.getInt("per_page");
+                    r.currentPage = d.getInt("current_page");
+                    r.lastPage = d.getInt("last_page");
+                    OrderInfo[] ol = new OrderInfo[n];
+                    JSONArray arr = d.getJSONArray("data");
+                    for (int i = 0; i < n; i++) {
+                        JSONObject dp = arr.getJSONObject(i);
+                        OrderInfo o = OrderInfo.fromJSONObject(dp);
+                        ol[i] = o;
+                    }
+                    standardOnSuccess(callback, r);
+                }
+
+                @Override
+                public void onError(int code, String message, Object data) throws JSONException {
+                    standardOnError(callback, code, message, data);
+                }
+            });
+        } catch (JSONException e) {
+            onRequestJSONException(e);
+        }
+    }
+
+    /**
+     * 获取客户的订单列表
+     * 错误列表 NOT_LOGIN
+     * @param page  第几页
+     * @param perPage 每页多少元素
+     * @param callback 回调参数为这一页所有的订单信息
+     */
+    public void getPurchaserOrders(int page, int perPage,
+                                  final ApiCallback<Page<OrderInfo>> callback) {
+        try {
+            JSONObject input = new JSONObject();
+            input.put("page", page);
+            input.put("count", perPage);
+            sendRequest("Store.getPurchaserOrders", input, new ApiCallback<Object>() {
+                @Override
+                public void onSuccess(Object data) throws JSONException {
+                    JSONObject d = (JSONObject) data;
+                    Page r = new Page<ProductInfo>();
+                    int n = 0;
+                    r.total = d.getInt("total");
+                    r.perPage = n = d.getInt("per_page");
+                    r.currentPage = d.getInt("current_page");
+                    r.lastPage = d.getInt("last_page");
+                    OrderInfo[] ol = new OrderInfo[n];
+                    JSONArray arr = d.getJSONArray("data");
+                    for (int i = 0; i < n; i++) {
+                        JSONObject dp = arr.getJSONObject(i);
+                        OrderInfo o = OrderInfo.fromJSONObject(dp);
+                        ol[i] = o;
+                    }
+                    standardOnSuccess(callback, r);
                 }
 
                 @Override

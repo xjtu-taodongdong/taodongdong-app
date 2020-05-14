@@ -1,5 +1,8 @@
 package com.taodongdong.ecommerce.api;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class OrderInfo {
     public int id;
     /**
@@ -41,4 +44,26 @@ public class OrderInfo {
      * 客户已经确认收货
      */
     public final static int STATUS_CONFIRMED = 4;
+
+    /**
+     * 从JSONObject读取一个Order
+     * @param d 输入
+     * @return 输出
+     * @throws JSONException
+     */
+    public static OrderInfo fromJSONObject(JSONObject d) throws JSONException {
+        OrderInfo o = new OrderInfo();
+        o.id = d.getInt("id");
+        o.productId = d.getInt("product_id");
+        o.storeId = d.getInt("store_id");
+        o.purchaserUserId = d.getInt("purchaser_user_id");
+        o.merchantUserId = d.getInt("merchant_user_id");
+        o.productName = d.getString("product_name");
+        o.productPrice = d.getInt("product_price");
+        o.productAmount = d.getInt("product_amount");
+        o.productDescription = d.getString("product_description");
+        o.productImage = d.getString("product_image");
+        o.orderStatus = d.getInt("order_status");
+        return o;
+    }
 }
