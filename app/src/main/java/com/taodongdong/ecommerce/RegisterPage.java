@@ -3,16 +3,16 @@ package com.taodongdong.ecommerce;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
-import com.taodongdong.ecommerce.api.ApiCallback;
+import com.taodongdong.ecommerce.api.*;
 
 import org.json.JSONException;
-
 public class RegisterPage extends AbstractActivity implements View.OnClickListener {
     private Button register = null;
     private Button cancel = null;
@@ -49,6 +49,7 @@ public class RegisterPage extends AbstractActivity implements View.OnClickListen
                     @Override
                     public void onError(int code, String message, Object data) throws JSONException {
                         api().showToast("注册失败");
+                        Log.i("注册失败", "onError: " + message, null);
                     }
                 });
             }else{

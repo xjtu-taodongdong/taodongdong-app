@@ -56,6 +56,7 @@ public class MainActivity extends AbstractActivity {
                     public void onSuccess(String data) throws JSONException {
                         Intent intent = new Intent(MainActivity.this,HomeActivity.class);
                         startActivity(intent);
+                        MainActivity.this.finish();
                     }
                     @Override
                     public void onError(int code, String message, Object data) throws JSONException {

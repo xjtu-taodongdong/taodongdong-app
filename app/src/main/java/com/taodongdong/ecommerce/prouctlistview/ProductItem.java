@@ -20,6 +20,8 @@ public class ProductItem {
 
     private Bitmap image;
 
+    private int id;
+
 
     public ProductItem(String description, Bitmap image) {
         this.description = description;
@@ -35,12 +37,14 @@ public class ProductItem {
             adapter.clear();
             for(int i = 0; i < list.size(); i++){
                 ProductItem item = new ProductItem(list.get(i).productDescription, adapter.defaultImage);
+                item.id = list.get(i).id;
                 adapter.add(item);
                 ImageGetter ig = new ImageGetter(adapter, item);
             }
 
         }
     }
+    public int getID(){ return id; }
 
     public String getDescription() {
         return description;

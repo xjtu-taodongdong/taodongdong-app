@@ -1,5 +1,6 @@
 package com.taodongdong.ecommerce;
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,10 +10,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.EditText;
 
@@ -40,16 +43,20 @@ import java.util.List;
 public class HomeActivity extends AbstractActivity implements View.OnClickListener {
     private ViewPager mViewpager;
 
-    //声明四个ImageButton
+    //声明ImageButton
     private ImageButton shopImg;
     private ImageButton myshopImg;
     private ImageButton usrImg;
+
     private SearchView searchView;
     private ListView productList;
     private ListView myshopList;
     private ProductListAdapter plAdapter;
     private ProductListAdapter myshopAdapter;
+
     private Button put_on_sale;
+
+    private View userInfoPage;
 
     //声明ViewPager的适配器
     private PagerAdapter mAdpater;
@@ -67,18 +74,6 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
         initEvents();//初始化事件
 
 
-        //test/////////////////////////////////////
-        Resources res = this.getResources();
-        Bitmap bmp= BitmapFactory.decodeResource(res, R.mipmap.ic_launcher);
-        ProductItem pi = new ProductItem("test",bmp);
-        List<ProductItem> list = new ArrayList<ProductItem>();
-        for(int i = 0; i < 100;i++){
-            list.add(new ProductItem("test",bmp));
-        }
-
-        //test//////////////////////////////////////
-
-
 
     }
 
@@ -92,13 +87,14 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                api().showToast("query" + query);
+
                 HomeActivity.this.api().searchProducts(query, 1, 10, new ApiCallback<Page<ProductInfo>>() {
                     @Override
                     public void onSuccess(Page<ProductInfo> data) throws JSONException {
                         HomeActivity.this.plAdapter.clear();
                         ProductItem.Factory.convertFromProductInfo(Arrays.asList(data.data), HomeActivity.this.plAdapter);
                         plAdapter.notifyDataSetChanged();
-                        //TODO 处理搜索成功
                     }
 
                     @Override
@@ -113,6 +109,19 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
             public boolean onQueryTextChange(String newText) {
 
                 return false;
+            }
+        });
+        productList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id){
+                int ID = HomeActivity.this.plAdapter.getItem(position).getID();
+                Bundle b = new Bundle();
+                b.putInt("id",ID);
+                Intent intent = new Intent();
+                intent.putExtras(b);
+                intent.setClass(HomeActivity.this,ProductDetails.class);
+                startActivity(intent);
+
             }
         });
         //添加ViewPager的切换Tab的监听事件
@@ -137,6 +146,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
                         break;
                     case 2:
                         usrImg.setImageResource(R.mipmap.ic_launcher);
+                        HomeActivity.this.refreshUserInfo();
                         break;
                 }
             }
@@ -173,7 +183,6 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
                 container.removeView(mTabs.get(position));
             }
         };
-            Log.e("init", "initData: null adpter " + mAdpater.getCount());
         //设置ViewPager的适配器
         mViewpager.setAdapter(mAdpater);
 
@@ -200,6 +209,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
         searchView = (SearchView)tab1.findViewById(R.id.search_products);
         productList = (ListView)tab1.findViewById(R.id.id_shop_list);
         myshopList = (ListView)tab2.findViewById(R.id.id_myshop_list);
+        userInfoPage = tab3;
         if(productList == null){
             Log.e("init", "initViews: null listview");
         }
@@ -221,8 +231,6 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
                 //设置viewPager的当前Tab
                 mViewpager.setCurrentItem(0);
                 shopImg.setImageResource(R.mipmap.ic_launcher);
-
-                //TODO 更新商品列表
                 break;
             case R.id.id_tab_myshop:
                 api().showToast(" tab 2");
@@ -298,6 +306,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
         View dialogView = View.inflate(this, R.layout.fill_product_detail, null);
         dialog.setView(dialogView);
         dialog.show();
+        api().showToast("dialog show");
 
         final EditText product_name = dialogView.findViewById(R.id.fill_product_name);
         final EditText product_price = dialogView.findViewById(R.id.product_unit_price);
@@ -351,5 +360,25 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
                 dialog.dismiss();
             }
         });
+    }
+
+    private void refreshUserInfo(){
+        View tab = userInfoPage;
+        final TextView user = (TextView)tab.findViewById(R.id.user);
+        final TextView balance = (TextView)tab.findViewById(R.id.balance);
+        api().getUserInfo(new ApiCallback<UserInfo>(){
+
+            @Override
+            public void onSuccess(UserInfo data) throws JSONException {
+                user.setText("用户名:" + data.username);
+                balance.setText("余额:" + String.valueOf(data.balance));
+            }
+
+            @Override
+            public void onError(int code, String message, Object data) throws JSONException {
+
+            }
+        });
+
     }
 }
