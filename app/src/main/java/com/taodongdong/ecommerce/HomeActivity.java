@@ -18,7 +18,13 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.EditText;
+import android.os.Environment;
 
+import android.app.Activity;
+import android.database.Cursor;
+import android.net.Uri;
+
+import android.provider.MediaStore;
 
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
@@ -39,6 +45,13 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.FileNotFoundException;
 
 public class HomeActivity extends AbstractActivity implements View.OnClickListener {
     private ViewPager mViewpager;
@@ -53,6 +66,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
     private ListView myshopList;
     private ProductListAdapter plAdapter;
     private ProductListAdapter myshopAdapter;
+    private TextView img_file_path;
 
     private Button put_on_sale;
 
@@ -305,6 +319,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
 
                             }
                         });
+
                     }
 
                     @Override
@@ -351,6 +366,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
         dialog.show();
         api().showToast("dialog show");
 
+        img_file_path = dialogView.findViewById(R.id.img_file_path);
         final EditText product_name = dialogView.findViewById(R.id.fill_product_name);
         final EditText product_price = dialogView.findViewById(R.id.product_unit_price);
         final EditText product_amount = dialogView.findViewById(R.id.product_amount);
@@ -364,6 +380,10 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
             @Override
             public void onClick(View v) {
                 //上传商品的图片，要调用系统的接口
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("image/*");//设置图片类型
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                startActivityForResult(intent,1);
             }
         });
 
@@ -383,8 +403,24 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
                     api().createProduct(name, Integer.parseInt(price), Integer.parseInt(amount), description, new ApiCallback<ProductInfo>() {
                         @Override
                         public void onSuccess(ProductInfo data) throws JSONException {
-                            api().showToast("上架商品成功");
-                            dialog.dismiss();
+                            String path = img_file_path.getText().toString();
+                            if(!path.equals("")) {
+                                File file = compressImg(path);
+                                api().uploadImage(data.id, file, new ApiCallback<String>() {
+                                    @Override
+                                    public void onSuccess(String data) throws JSONException {
+                                        api().showToast("上架商品成功");
+                                        dialog.dismiss();
+                                    }
+
+                                    @Override
+                                    public void onError(int code, String message, Object data) throws JSONException {
+
+                                    }
+                                });
+                            }else {
+                                api().showToast("img_file_path为空！");
+                            }
                         }
 
                         @Override
@@ -423,5 +459,80 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
             }
         });
 
+    }
+
+    //处理选择图片后的回调，并传输数据
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_OK) {//是否选择，没选择就不会继续
+            Uri uri = data.getData();//得到uri，后面就是将uri转化成file的过程。
+            String[] proj = {MediaStore.Images.Media.DATA};
+            Cursor actualimagecursor = getContentResolver().query(uri,proj,null,null,null);
+            int actual_image_column_index = actualimagecursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            actualimagecursor.moveToFirst();
+            String img_path = actualimagecursor.getString(actual_image_column_index);
+            img_file_path.setText(img_path);
+            api().showToast(img_path);
+        }
+    }
+
+    protected File compressImg(String path){
+        SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
+        Date date = new Date(System.currentTimeMillis());
+        //图片名
+        String filename = format.format(date);
+
+        File file = new File(Environment.getExternalStorageDirectory(), filename + ".png");
+
+        //
+        BitmapFactory.Options newOpts = new BitmapFactory.Options();
+        // 开始读入图片，此时把options.inJustDecodeBounds 设回true了
+        newOpts.inJustDecodeBounds = true;
+        Bitmap bitmap = BitmapFactory.decodeFile(path, newOpts);// 此时返回bm为空
+        newOpts.inJustDecodeBounds = false;
+        int w = newOpts.outWidth;
+        int h = newOpts.outHeight;
+        // 现在主流手机比较多是800*480分辨率，所以高和宽我们设置为
+        float hh = 800f;// 这里设置高度为800f
+        float ww = 480f;// 这里设置宽度为480f
+        // 缩放比。由于是固定比例缩放，只用高或者宽其中一个数据进行计算即可
+        int be = 1;// be=1表示不缩放
+        if (w > h && w > ww) {// 如果宽度大的话根据宽度固定大小缩放
+            be = (int) (newOpts.outWidth / ww);
+        } else if (w < h && h > hh) {// 如果高度高的话根据宽度固定大小缩放
+            be = (int) (newOpts.outHeight / hh);
+        }
+        if (be <= 0)
+            be = 1;
+        newOpts.inSampleSize = be;// 设置缩放比例
+        // 重新读入图片，注意此时已经把options.inJustDecodeBounds 设回false了
+        bitmap = BitmapFactory.decodeFile(path, newOpts);
+        //以上完成按大小压缩图片，接下来再按质量压缩图片。
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);// 质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
+        int options = 90;
+        while (baos.toByteArray().length / 1024 > 1024) { // 循环判断如果压缩后图片是否大于1mb,大于继续压缩
+            baos.reset(); // 重置baos即清空baos
+            bitmap.compress(Bitmap.CompressFormat.JPEG, options, baos);// 这里压缩options%，把压缩后的数据存放到baos中
+            options -= 10;// 每次都减少10
+        }
+        //此时压缩的数据已经都在baos里面了,接下来把baos里面的数据传给file即可。
+        try {
+            FileOutputStream fos = new FileOutputStream(file);
+            try {
+                fos.write(baos.toByteArray());
+                fos.flush();
+                fos.close();
+            } catch (IOException e) {
+
+                e.printStackTrace();
+            }
+        } catch (FileNotFoundException e) {
+
+            e.printStackTrace();
+        }
+
+        // recycleBitmap(bitmap);
+        return file;
     }
 }

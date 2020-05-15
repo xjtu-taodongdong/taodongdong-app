@@ -2,6 +2,7 @@ package com.taodongdong.ecommerce;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -41,15 +42,18 @@ public class ProductDetails extends AbstractActivity {
         amount = (TextView)findViewById(R.id.remainingNum);
         detail = (TextView) findViewById(R.id.detailOfProduct);
         price = (TextView) findViewById(R.id.priceOfProduct);
-        if(authority==1){
+        Intent intent = getIntent();
+        String authority = intent.getStringExtra("authority");
+        if(Integer.parseInt(authority)==1){
             purchase.setVisibility(View.GONE); //商家权限，隐藏购买按钮
         }else {
-            modify.setVisibility(View.GONE); //用户权限，隐藏购买按钮
+            modify.setVisibility(View.GONE); //用户权限，隐藏修改按钮
         }
         int ID = savedInstanceState.getInt("id");
         api().getProductInfo(ID, new ApiCallback<ProductInfo>() {
             @Override
             public void onSuccess(ProductInfo data) throws JSONException {
+
                 ImageGetter ig = new ImageGetter(imageView);
                 ig.execute(data.productImage);
                 name.setText(data.productName);
