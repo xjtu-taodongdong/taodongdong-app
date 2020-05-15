@@ -80,6 +80,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
     private List<View> mTabs = new ArrayList<>();
 
     private UserInfo userInfo;
+    private TextView money;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,6 +138,21 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
                 b.putInt("id",ID);
                 Intent intent = new Intent();
                 intent.putExtras(b);
+                intent.putExtra("authority","0");
+                intent.setClass(HomeActivity.this,ProductDetails.class);
+                startActivity(intent);
+
+            }
+        });
+        myshopList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id){
+                int ID = HomeActivity.this.myshopAdapter.getItem(position).getID();
+                Bundle b = new Bundle();
+                b.putInt("id",ID);
+                Intent intent = new Intent();
+                intent.putExtras(b);
+                intent.putExtra("authority","1");
                 intent.setClass(HomeActivity.this,ProductDetails.class);
                 startActivity(intent);
 
@@ -192,6 +208,13 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
         };
         orderBuy.setOnClickListener(orderListener);
         orderSale.setOnClickListener(orderListener);
+
+        money.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                HomeActivity.this.recharge_dialog();
+            }
+        });
     }
 
     private void initDatas() {
@@ -235,7 +258,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
         shopImg = (ImageButton) findViewById(R.id.id_tab_shop);
         myshopImg = (ImageButton) findViewById(R.id.id_tab_myshop);
         usrImg = (ImageButton) findViewById(R.id.id_tab_usr);
-        put_on_sale = (Button) findViewById(R.id.put_on_sale);
+
 
         //获取到三个Tab
         LayoutInflater inflater = LayoutInflater.from(this);
@@ -248,6 +271,8 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
         myshopList = (ListView)tab2.findViewById(R.id.id_myshop_list);
         orderBuy = (TextView)tab3.findViewById(R.id.manage_buy_order);
         orderSale = (TextView)tab3.findViewById(R.id.manage_sale_order);
+        put_on_sale = (Button) tab2.findViewById(R.id.put_on_sale);
+        money = (TextView) tab3.findViewById(R.id.recharge);
 
         userInfoPage = tab3;
         api().getUserInfo(new ApiCallback<UserInfo>() {
@@ -357,14 +382,14 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
 
     }
 
-    //上架商品和修改商品时的对话弹窗
+    //上架商品对话弹窗
     protected void myDialog(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         final AlertDialog dialog = builder.create();
         View dialogView = View.inflate(this, R.layout.fill_product_detail, null);
         dialog.setView(dialogView);
         dialog.show();
-        api().showToast("dialog show");
+        api().showToast("create product show");
 
         img_file_path = dialogView.findViewById(R.id.img_file_path);
         final EditText product_name = dialogView.findViewById(R.id.fill_product_name);
@@ -534,5 +559,49 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
 
         // recycleBitmap(bitmap);
         return file;
+    }
+
+    protected void recharge_dialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        final AlertDialog dialog = builder.create();
+        View dialogView = View.inflate(this, R.layout.recharge, null);
+        dialog.setView(dialogView);
+        dialog.show();
+        api().showToast("recharge show");
+
+
+        final EditText recharge = dialogView.findViewById(R.id.recharge);
+
+        Button confirm = dialogView.findViewById(R.id.confirm_recharge);
+        Button btn_cancel = dialogView.findViewById(R.id.cancel_recharge);
+
+        confirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String num = recharge.getText().toString();
+                if(!num.equals("")){
+                    api().recharge(Integer.parseInt(num), new ApiCallback<UserInfo>() {
+                        @Override
+                        public void onSuccess(UserInfo data) throws JSONException {
+                            money.setText(String.valueOf(data.balance));
+                            api().showToast("充值成功");
+                            dialog.dismiss();
+                        }
+
+                        @Override
+                        public void onError(int code, String message, Object data) throws JSONException {
+                            api().showToast("充值失败");
+                        }
+                    });
+                }
+            }
+        });
+
+        btn_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
     }
 }
