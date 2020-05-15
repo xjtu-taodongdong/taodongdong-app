@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 
 import com.taodongdong.ecommerce.MainApplication;
 import com.taodongdong.ecommerce.R;
+import com.taodongdong.ecommerce.api.OrderInfo;
 import com.taodongdong.ecommerce.api.ProductInfo;
 
 import java.io.InputStream;
@@ -37,6 +38,18 @@ public class ProductItem {
             adapter.clear();
             for(int i = 0; i < list.size(); i++){
                 ProductItem item = new ProductItem(list.get(i).productDescription, adapter.defaultImage);
+                item.id = list.get(i).id;
+                adapter.add(item);
+                ImageGetter ig = new ImageGetter(adapter, item);
+            }
+
+        }
+        public static void  convertFromOrderInfo(List<OrderInfo> list, ProductListAdapter adapter){
+            adapter.clear();
+            for(int i = 0; i < list.size(); i++){
+                OrderInfo info = list.get(i);
+                String txt = String.valueOf(info.purchaserUserId) + " : " + info.productDescription;
+                ProductItem item = new ProductItem(txt, adapter.defaultImage);
                 item.id = list.get(i).id;
                 adapter.add(item);
                 ImageGetter ig = new ImageGetter(adapter, item);

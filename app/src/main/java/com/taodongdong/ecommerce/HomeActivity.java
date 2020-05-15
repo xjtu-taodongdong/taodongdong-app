@@ -57,11 +57,15 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
     private Button put_on_sale;
 
     private View userInfoPage;
+    private TextView orderBuy;
+    private TextView orderSale;
 
     //声明ViewPager的适配器
     private PagerAdapter mAdpater;
     //Tab的List
     private List<View> mTabs = new ArrayList<>();
+
+    private UserInfo userInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -156,6 +160,24 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
 
             }
         });
+        View.OnClickListener orderListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO 跳转到订单页面
+                Bundle b = new Bundle();
+                if(v == orderBuy){
+                    b.putInt("type",OrderActivity.BUY_ORDER);
+                }else{
+                    b.putInt("type",OrderActivity.SALE_ORDER);
+                }
+                Intent intent = new Intent();
+                intent.putExtras(b);
+                intent.setClass(HomeActivity.this,OrderActivity.class);
+                startActivity(intent);
+            }
+        };
+        orderBuy.setOnClickListener(orderListener);
+        orderSale.setOnClickListener(orderListener);
     }
 
     private void initDatas() {
@@ -206,10 +228,31 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
         View tab1 = inflater.inflate(R.layout.shop, null);
         View tab2 = inflater.inflate(R.layout.myshop, null);
         View tab3 = inflater.inflate(R.layout.usr, null);
+
         searchView = (SearchView)tab1.findViewById(R.id.search_products);
         productList = (ListView)tab1.findViewById(R.id.id_shop_list);
         myshopList = (ListView)tab2.findViewById(R.id.id_myshop_list);
+        orderBuy = (TextView)tab3.findViewById(R.id.manage_buy_order);
+        orderSale = (TextView)tab3.findViewById(R.id.manage_sale_order);
+
         userInfoPage = tab3;
+        api().getUserInfo(new ApiCallback<UserInfo>() {
+            @Override
+            public void onSuccess(UserInfo data) throws JSONException {
+                HomeActivity.this.userInfo = data;
+                if(userInfo.authority == 0){
+                    orderSale.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onError(int code, String message, Object data) throws JSONException {
+                //TODO 处理错误
+            }
+        });
+
+
+
         if(productList == null){
             Log.e("init", "initViews: null listview");
         }
