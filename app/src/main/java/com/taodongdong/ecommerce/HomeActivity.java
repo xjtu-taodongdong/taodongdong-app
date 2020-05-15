@@ -1,5 +1,6 @@
 package com.taodongdong.ecommerce;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -67,7 +68,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
     private ProductListAdapter plAdapter;
     private ProductListAdapter myshopAdapter;
     private TextView img_file_path;
-
+    private Button reg_saler;
     private Button put_on_sale;
 
     private View userInfoPage;
@@ -215,6 +216,13 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
                 HomeActivity.this.recharge_dialog();
             }
         });
+
+        reg_saler.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                HomeActivity.this.confirm_reg();
+            }
+        });
     }
 
     private void initDatas() {
@@ -272,7 +280,8 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
         orderBuy = (TextView)tab3.findViewById(R.id.manage_buy_order);
         orderSale = (TextView)tab3.findViewById(R.id.manage_sale_order);
         put_on_sale = (Button) tab2.findViewById(R.id.put_on_sale);
-        money = (TextView) tab3.findViewById(R.id.recharge);
+        money = (TextView) tab3.findViewById(R.id.balance);
+        reg_saler = (Button) tab3.findViewById(R.id.reg_saler);
 
         userInfoPage = tab3;
         api().getUserInfo(new ApiCallback<UserInfo>() {
@@ -281,6 +290,8 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
                 HomeActivity.this.userInfo = data;
                 if(userInfo.authority == 0){
                     orderSale.setVisibility(View.GONE);
+                }else{
+                    reg_saler.setVisibility(View.GONE);
                 }
             }
 
@@ -409,6 +420,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
                 intent.setType("image/*");//设置图片类型
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
                 startActivityForResult(intent,1);
+                api().showToast("上传图片中");
             }
         });
 
@@ -489,6 +501,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
     //处理选择图片后的回调，并传输数据
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        api().showToast("回调开始");
         if (resultCode == Activity.RESULT_OK) {//是否选择，没选择就不会继续
             Uri uri = data.getData();//得到uri，后面就是将uri转化成file的过程。
             String[] proj = {MediaStore.Images.Media.DATA};
@@ -603,5 +616,37 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
                 dialog.dismiss();
             }
         });
+    }
+
+    protected void confirm_reg(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //下架商品记得补充！！！！
+                api().approveMerchant(new ApiCallback<String>() {
+                    @Override
+                    public void onSuccess(String data) throws JSONException {
+                        api().showToast("注册为商家成功");
+                        reg_saler.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onError(int code, String message, Object data) throws JSONException {
+
+                    }
+                });
+
+            }
+        });
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.setMessage("你确认要注册为商家吗？");
+        builder.setTitle("提示");
+        builder.show();
     }
 }

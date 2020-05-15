@@ -37,4 +37,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="管理出售订单" />
+
+    <Button
+        android:id="@+id/reg_saler"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="注册为商家" />
 </LinearLayout>

@@ -263,7 +263,6 @@ public class ApiClient extends AbstractApiClient {
                 StoreInfo s = new StoreInfo();
                 s.id = d.getInt("id");
                 s.merchantUserId = d.getInt("merchant_user_id");
-                s.storeName = d.getString("store_name");
                 standardOnSuccess(callback, s);
             }
 
