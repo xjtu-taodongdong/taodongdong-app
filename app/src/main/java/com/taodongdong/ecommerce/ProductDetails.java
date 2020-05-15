@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.taodongdong.ecommerce.api.ApiCallback;
+import com.taodongdong.ecommerce.api.OrderInfo;
 import com.taodongdong.ecommerce.api.ProductInfo;
 import com.taodongdong.ecommerce.prouctlistview.ProductItem;
 import com.taodongdong.ecommerce.prouctlistview.ProductListAdapter;
@@ -102,7 +103,59 @@ public class ProductDetails extends AbstractActivity {
             }
         });
 
+        purchase.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                purchaseDialog();
+            }
+        });
+
     }
+    protected void purchaseDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("提示");
+        builder.setMessage("确认要买吗");
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                ProductDetails.this.api().createOrder(ID, new ApiCallback<OrderInfo>() {
+                    @Override
+                    public void onSuccess(OrderInfo data) throws JSONException {
+                        ProductDetails.this.api().payOrder(data.id, new ApiCallback<String>() {
+                            @Override
+                            public void onSuccess(String data) throws JSONException {
+                                if(data == "购买成功"){
+                                    return;
+                                }
+                            }
+
+                            @Override
+                            public void onError(int code, String message, Object data) throws JSONException {
+                                ProductDetails.this.api().showToast("支付失败：" + message);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onError(int code, String message, Object data) throws JSONException {
+                        ProductDetails.this.api().showToast("创建订单失败：" + message);
+                    }
+                });
+
+                dialogInterface.cancel();
+            }
+
+        });
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.cancel();
+            }
+        });
+        builder.show();
+
+    }
+
 
     //上架商品和修改商品时的对话弹窗
     protected void modify_Dialog(){
@@ -279,10 +332,6 @@ public class ProductDetails extends AbstractActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 //下架商品记得补充！！！！
-
-
-
-
 
             }
         });
