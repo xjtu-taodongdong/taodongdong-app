@@ -48,7 +48,7 @@ public class RegisterPage extends AbstractActivity implements View.OnClickListen
 
                     @Override
                     public void onError(int code, String message, Object data) throws JSONException {
-                        api().showToast("注册失败");
+                        api().showToast("注册失败"+"    "+message);
                         Log.i("注册失败", "onError: " + message, null);
                     }
                 });

@@ -23,4 +23,6 @@
     <string name="product_amount">商品数量</string>
     <string name="product_description">商品描述</string>
     <string name="confirm_product_info">确定</string>
+    <string name="confirm_recharge">确定充值</string>
+
 </resources>
