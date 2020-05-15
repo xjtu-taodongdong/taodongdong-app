@@ -510,6 +510,34 @@ public class ApiClient extends AbstractApiClient {
     }
 
     /**
+     * 下架商品
+     * 错误列表 NO_SUCH_PRODUCT NOT_OWNER_MERCHANT
+     * @param productId 商品ID
+     * @param callback 回调参数固定为“下架成功”
+     */
+    public void removeProduct(int productId, final ApiCallback<String> callback) {
+        try {
+            JSONObject extra = new JSONObject();
+            extra.put("id", productId);
+            sendRequest("Product.removeProduct", image, extra, new ApiCallback<Object>() {
+                @Override
+                public void onSuccess(Object data) throws JSONException {
+                    JSONObject d = (JSONObject) data;
+                    String url = d.getString("url");
+                    standardOnSuccess(callback, url);
+                }
+
+                @Override
+                public void onError(int code, String message, Object data) throws JSONException {
+                    standardOnError(callback, code, message, data);
+                }
+            });
+        } catch (JSONException e) {
+            onRequestJSONException(e);
+        }
+    }
+
+    /**
      * 创建订单
      * 错误列表 NOT_LOGIN NO_SUCH_PRODUCT NO_SUCH_STORE
      * @param productId 商品ID
