@@ -2,7 +2,9 @@ package com.taodongdong.ecommerce;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.Manifest;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -20,8 +22,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.EditText;
 import android.os.Environment;
+//import android.support.v4.app.ActivityCompat;
+
 
 import android.app.Activity;
+
 import android.database.Cursor;
 import android.net.Uri;
 
@@ -53,6 +58,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.FileNotFoundException;
+import java.io.FileInputStream;
 
 public class HomeActivity extends AbstractActivity implements View.OnClickListener {
     private ViewPager mViewpager;
@@ -82,6 +88,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
 
     private UserInfo userInfo;
     private TextView money;
+    private static int IMAGE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -338,20 +345,8 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
                             @Override
                             public void onClick(View v) {
                                 //点击后可以用对话框的方式来但是也是要写一个view传给对话框
-                                HomeActivity.this.myDialog();//上架商品
-                                api().getAllProducts(s.id, 1, 10, new ApiCallback<Page<ProductInfo>>() {
-                                    @Override
-                                    public void onSuccess(Page<ProductInfo> data) throws JSONException {
-                                        HomeActivity.this.myshopAdapter.clear();
-                                        ProductItem.Factory.convertFromProductInfo(Arrays.asList(data.data), HomeActivity.this.myshopAdapter);
-                                        myshopAdapter.notifyDataSetChanged();
-                                    }
+                                HomeActivity.this.myDialog(s.id);//上架商品
 
-                                    @Override
-                                    public void onError(int code, String message, Object data) throws JSONException {
-
-                                    }
-                                });//重新获取商品所有的信息
 
                             }
                         });
@@ -394,7 +389,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
     }
 
     //上架商品对话弹窗
-    protected void myDialog(){
+    protected void myDialog(int sid){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         final AlertDialog dialog = builder.create();
         View dialogView = View.inflate(this, R.layout.fill_product_detail, null);
@@ -407,6 +402,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
         final EditText product_price = dialogView.findViewById(R.id.product_unit_price);
         final EditText product_amount = dialogView.findViewById(R.id.product_amount);
         final EditText product_description = dialogView.findViewById(R.id.product_description);
+        final int storeid = sid;
 
         Button confirm = dialogView.findViewById(R.id.confirm_product_info);
         Button btn_cancel = dialogView.findViewById(R.id.cancel_product_info);
@@ -416,10 +412,9 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
             @Override
             public void onClick(View v) {
                 //上传商品的图片，要调用系统的接口
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.setType("image/*");//设置图片类型
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                startActivityForResult(intent,1);
+                Intent intent = new Intent(Intent.ACTION_PICK,
+                    android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(intent, IMAGE);
                 api().showToast("上传图片中");
             }
         });
@@ -442,11 +437,25 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
                         public void onSuccess(ProductInfo data) throws JSONException {
                             String path = img_file_path.getText().toString();
                             if(!path.equals("")) {
+                                Log.e("Fuck",path);
                                 File file = compressImg(path);
                                 api().uploadImage(data.id, file, new ApiCallback<String>() {
                                     @Override
                                     public void onSuccess(String data) throws JSONException {
                                         api().showToast("上架商品成功");
+                                        api().getAllProducts(storeid, 1, 10, new ApiCallback<Page<ProductInfo>>() {
+                                            @Override
+                                            public void onSuccess(Page<ProductInfo> data) throws JSONException {
+                                                HomeActivity.this.myshopAdapter.clear();
+                                                ProductItem.Factory.convertFromProductInfo(Arrays.asList(data.data), HomeActivity.this.myshopAdapter);
+                                                myshopAdapter.notifyDataSetChanged();
+                                            }
+
+                                            @Override
+                                            public void onError(int code, String message, Object data) throws JSONException {
+
+                                            }
+                                        });//重新获取商品所有的信息
                                         dialog.dismiss();
                                     }
 
@@ -478,6 +487,25 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
         });
     }
 
+    //动态获取权限
+//    private void checkPermission() {
+//        //检查权限（NEED_PERMISSION）是否被授权 PackageManager.PERMISSION_GRANTED表示同意授权
+//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+//            != PackageManager.PERMISSION_GRANTED) {
+//            //用户已经拒绝过一次，再次弹出权限申请对话框需要给用户一个解释
+//            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission
+//                .WRITE_EXTERNAL_STORAGE)) {
+//                api().showToast("请开通相关权限，否则无法正常使用本应用！");
+//            }
+//            //申请权限
+//            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1);
+//
+//        } else {
+//            api().showToast("授权成功!");
+//
+//        }
+//    }
+
     private void refreshUserInfo(){
         View tab = userInfoPage;
         final TextView user = (TextView)tab.findViewById(R.id.user);
@@ -502,15 +530,25 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         api().showToast("回调开始");
-        if (resultCode == Activity.RESULT_OK) {//是否选择，没选择就不会继续
-            Uri uri = data.getData();//得到uri，后面就是将uri转化成file的过程。
-            String[] proj = {MediaStore.Images.Media.DATA};
-            Cursor actualimagecursor = getContentResolver().query(uri,proj,null,null,null);
-            int actual_image_column_index = actualimagecursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            actualimagecursor.moveToFirst();
-            String img_path = actualimagecursor.getString(actual_image_column_index);
-            img_file_path.setText(img_path);
-            api().showToast(img_path);
+        if (resultCode == Activity.RESULT_OK && requestCode == IMAGE) {//是否选择，没选择就不会继续
+//            Uri uri = data.getData();//得到uri，后面就是将uri转化成file的过程。
+//            String[] proj = {MediaStore.Images.Media.DATA};
+//            Cursor actualimagecursor = getContentResolver().query(uri,proj,null,null,null);
+//            int actual_image_column_index = actualimagecursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+//            actualimagecursor.moveToFirst();
+//            String img_path = actualimagecursor.getString(actual_image_column_index);
+//            img_file_path.setText(img_path);
+//            api().showToast(img_path);
+            Uri selectedImage = data.getData();
+            String[] filePathColumns = {MediaStore.Images.Media.DATA};
+            Cursor c = getContentResolver().query(selectedImage, filePathColumns, null, null, null);
+            c.moveToFirst();
+            int columnIndex = c.getColumnIndex(filePathColumns[0]);
+            String imagePath = c.getString(columnIndex);
+            c.close();
+            img_file_path.setText(imagePath);
+            api().showToast(imagePath);
+
         }
     }
 
@@ -521,57 +559,92 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
         String filename = format.format(date);
 
         File file = new File(Environment.getExternalStorageDirectory(), filename + ".png");
-
-        //
-        BitmapFactory.Options newOpts = new BitmapFactory.Options();
-        // 开始读入图片，此时把options.inJustDecodeBounds 设回true了
-        newOpts.inJustDecodeBounds = true;
-        Bitmap bitmap = BitmapFactory.decodeFile(path, newOpts);// 此时返回bm为空
-        newOpts.inJustDecodeBounds = false;
-        int w = newOpts.outWidth;
-        int h = newOpts.outHeight;
-        // 现在主流手机比较多是800*480分辨率，所以高和宽我们设置为
-        float hh = 800f;// 这里设置高度为800f
-        float ww = 480f;// 这里设置宽度为480f
-        // 缩放比。由于是固定比例缩放，只用高或者宽其中一个数据进行计算即可
-        int be = 1;// be=1表示不缩放
-        if (w > h && w > ww) {// 如果宽度大的话根据宽度固定大小缩放
-            be = (int) (newOpts.outWidth / ww);
-        } else if (w < h && h > hh) {// 如果高度高的话根据宽度固定大小缩放
-            be = (int) (newOpts.outHeight / hh);
-        }
-        if (be <= 0)
-            be = 1;
-        newOpts.inSampleSize = be;// 设置缩放比例
-        // 重新读入图片，注意此时已经把options.inJustDecodeBounds 设回false了
-        bitmap = BitmapFactory.decodeFile(path, newOpts);
-        //以上完成按大小压缩图片，接下来再按质量压缩图片。
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);// 质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
-        int options = 90;
-        while (baos.toByteArray().length / 1024 > 1024) { // 循环判断如果压缩后图片是否大于1mb,大于继续压缩
-            baos.reset(); // 重置baos即清空baos
-            bitmap.compress(Bitmap.CompressFormat.JPEG, options, baos);// 这里压缩options%，把压缩后的数据存放到baos中
-            options -= 10;// 每次都减少10
-        }
-        //此时压缩的数据已经都在baos里面了,接下来把baos里面的数据传给file即可。
         try {
-            FileOutputStream fos = new FileOutputStream(file);
+            FileInputStream fis = new FileInputStream(path);
+            Bitmap bitmap  = BitmapFactory.decodeStream(fis);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            if(bitmap == null) Log.e("Fuck","bitmap is null");
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);// 质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
+            int options = 90;
+            while (baos.toByteArray().length / 1024 > 1024) { // 循环判断如果压缩后图片是否大于1mb,大于继续压缩
+                baos.reset(); // 重置baos即清空baos
+                bitmap.compress(Bitmap.CompressFormat.JPEG, options, baos);// 这里压缩options%，把压缩后的数据存放到baos中
+                options -= 10;// 每次都减少10
+            }
+            //此时压缩的数据已经都在baos里面了,接下来把baos里面的数据传给file即可。
             try {
-                fos.write(baos.toByteArray());
-                fos.flush();
-                fos.close();
+                if(!file.exists()) this.createFile(file);
+                else Log.e("Fuck","file exist");
+                FileOutputStream fos = new FileOutputStream(file);
+                try {
+                    fos.write(baos.toByteArray());
+                    fos.flush();
+                    fos.close();
+                } catch (IOException e) {
+
+                    e.printStackTrace();
+                }
+            } catch (FileNotFoundException e) {
+                Log.e("Fuck","can't come to this fos");
+                e.printStackTrace();
+            }
+
+            try {
+
+
+                fis.close();
             } catch (IOException e) {
 
                 e.printStackTrace();
             }
+            // recycleBitmap(bitmap);
         } catch (FileNotFoundException e) {
+            Log.e("Fuck","can't come to this fis    "+e.toString());
+            e.printStackTrace();
 
+        }
+        //
+//        BitmapFactory.Options newOpts = new BitmapFactory.Options();
+        // 开始读入图片，此时把options.inJustDecodeBounds 设回true了
+//        newOpts.inJustDecodeBounds = true;
+//        newOpts.inJustDecodeBounds = false;
+//        int w = newOpts.outWidth;
+//        int h = newOpts.outHeight;
+//        // 现在主流手机比较多是800*480分辨率，所以高和宽我们设置为
+//        float hh = 800f;// 这里设置高度为800f
+//        float ww = 480f;// 这里设置宽度为480f
+//        // 缩放比。由于是固定比例缩放，只用高或者宽其中一个数据进行计算即可
+//        int be = 1;// be=1表示不缩放
+//        if (w > h && w > ww) {// 如果宽度大的话根据宽度固定大小缩放
+//            be = (int) (newOpts.outWidth / ww);
+//        } else if (w < h && h > hh) {// 如果高度高的话根据宽度固定大小缩放
+//            be = (int) (newOpts.outHeight / hh);
+//        }
+//        if (be <= 0)
+//            be = 1;
+//        newOpts.inSampleSize = be;// 设置缩放比例
+        // 重新读入图片，注意此时已经把options.inJustDecodeBounds 设回false了
+//        bitmap = BitmapFactory.decodeFile(path, newOpts);
+        //以上完成按大小压缩图片，接下来再按质量压缩图片。
+
+        return file;
+    }
+
+    private String createFile(File file){
+        try{
+            if(file.getParentFile().exists()){
+
+                Log.e("Fuck","create file");
+                file.createNewFile();
+            }
+            else {
+
+                Log.e("Fuck","文件夹不存在");
+            }
+        }catch (Exception e){
             e.printStackTrace();
         }
-
-        // recycleBitmap(bitmap);
-        return file;
+        return "";
     }
 
     protected void recharge_dialog(){

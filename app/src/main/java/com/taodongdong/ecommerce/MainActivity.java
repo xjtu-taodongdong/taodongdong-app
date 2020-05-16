@@ -1,18 +1,20 @@
 package com.taodongdong.ecommerce;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.graphics.BitmapFactory;
-import android.os.Looper;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.os.AsyncTask;
 import android.widget.Toast;
-
+import android.app.Activity;
+import android.os.Build;
+import android.os.Environment;
 
 import com.taodongdong.ecommerce.api.ApiCallback;
 import com.taodongdong.ecommerce.api.ApiClient;
@@ -29,6 +31,7 @@ import java.io.BufferedInputStream;
 
 public class MainActivity extends AbstractActivity {
 
+
     private ImageView imageView = null;
     private String urlpath = "https://taodongdong.ddltech.top/storage/avatar/demo.jpg";
     private MyAsyncTask mat = null;
@@ -40,7 +43,7 @@ public class MainActivity extends AbstractActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        PermissionUtils.isGrantExternalRW(this, 1);
         imageView = (ImageView)findViewById(R.id.imageView);
         log = (Button)findViewById(R.id.login);
         register = (Button)findViewById(R.id.register);
@@ -165,5 +168,61 @@ public class MainActivity extends AbstractActivity {
             //返回的是解析后的网络图像
             return bitmap;
         }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case 1:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    //检验是否获取权限，如果获取权限，外部存储会处于开放状态，会弹出一个toast提示获得授权
+                    String sdCard = Environment.getExternalStorageState();
+                    if (sdCard.equals(Environment.MEDIA_MOUNTED)){
+                        api().showToast("获得权限");
+                    }
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            api().showToast("不行");
+                        }
+                    });
+                }
+                break;
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+}
+
+class PermissionUtils {
+    //这是要申请的权限
+    private static String[] PERMISSIONS_CAMERA_AND_STORAGE = {
+        Manifest.permission.READ_EXTERNAL_STORAGE,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        Manifest.permission.CAMERA};
+
+    /**
+     * 解决安卓6.0以上版本不能读取外部存储权限的问题
+     *
+     * @param activity
+     * @param requestCode
+     * @return
+     */
+    public static boolean isGrantExternalRW(Activity activity, int requestCode) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+            int storagePermission = activity.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            int cameraPermission = activity.checkSelfPermission(Manifest.permission.CAMERA);
+            //检测是否有权限，如果没有权限，就需要申请
+            if (storagePermission != PackageManager.PERMISSION_GRANTED ||
+                cameraPermission != PackageManager.PERMISSION_GRANTED) {
+                //申请权限
+                activity.requestPermissions(PERMISSIONS_CAMERA_AND_STORAGE, requestCode);
+                //返回false。说明没有授权
+                return false;
+            }
+        }
+        //说明已经授权
+        return true;
     }
 }

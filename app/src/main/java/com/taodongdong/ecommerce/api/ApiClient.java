@@ -519,7 +519,7 @@ public class ApiClient extends AbstractApiClient {
         try {
             JSONObject extra = new JSONObject();
             extra.put("id", productId);
-            sendRequest("Product.removeProduct", image, extra, new ApiCallback<Object>() {
+            sendRequest("Product.removeProduct", extra, new ApiCallback<Object>() {
                 @Override
                 public void onSuccess(Object data) throws JSONException {
                     JSONObject d = (JSONObject) data;
