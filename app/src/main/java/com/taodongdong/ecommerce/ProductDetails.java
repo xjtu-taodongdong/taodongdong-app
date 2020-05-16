@@ -51,6 +51,7 @@ public class ProductDetails extends AbstractActivity {
     TextView price;
     TextView img_file_path;
     int ID;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,52 +59,55 @@ public class ProductDetails extends AbstractActivity {
         purchase = (Button) findViewById(R.id.purchase);
         modify = (Button) findViewById(R.id.modify);
         imageView = (ImageView) findViewById(R.id.ProductIcon);
-        name = (TextView)findViewById(R.id.productName);
-        amount = (TextView)findViewById(R.id.remainingNum);
+        name = (TextView) findViewById(R.id.productName);
+        amount = (TextView) findViewById(R.id.remainingNum);
         detail = (TextView) findViewById(R.id.detailOfProduct);
         price = (TextView) findViewById(R.id.priceOfProduct);
         pull_off = (Button) findViewById(R.id.pull_off_shelves);
         Intent intent = getIntent();
         String authority = intent.getStringExtra("authority");
-        if(Integer.parseInt(authority)==1){
+        if (Integer.parseInt(authority) == 1) {
             purchase.setVisibility(View.GONE); //商家权限，隐藏购买按钮
-        }else {
+        } else {
             modify.setVisibility(View.GONE);
             pull_off.setVisibility(View.GONE);//用户权限，隐藏修改和下架按钮
         }
-        ID = savedInstanceState.getInt("id");
-        api().getProductInfo(ID, new ApiCallback<ProductInfo>() {
-            @Override
-            public void onSuccess(ProductInfo data) throws JSONException {
+        ID = intent.getIntExtra("id", 0);
+        if (ID != 0) {
+            api().getProductInfo(ID, new ApiCallback<ProductInfo>() {
+                @Override
+                public void onSuccess(ProductInfo data) throws JSONException {
 
-                ImageGetter ig = new ImageGetter(imageView);
-                ig.execute(data.productImage);
-                name.setText(data.productName);
-                amount.setText(String.valueOf(data.productAmount));
-                detail.setText(data.productDescription);
-                price.setText(data.getProductPriceReadable());
+                    ImageGetter ig = new ImageGetter(imageView);
+                    ig.execute(data.productImage);
+                    name.setText(data.productName);
+                    amount.setText(String.valueOf(data.productAmount));
+                    detail.setText(data.productDescription);
+                    price.setText(data.getProductPriceReadable());
 
-                modify.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        ProductDetails.this.modify_Dialog();
-                    }
-                });//修改商品信息的事件监听
-                pull_off.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        ProductDetails.this.confirm_pulloff();
-                    }
-                });
+                    modify.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            ProductDetails.this.modify_Dialog();
+                        }
+                    });//修改商品信息的事件监听
+                    pull_off.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            ProductDetails.this.confirm_pulloff();
+                        }
+                    });
 
 
-            }
+                }
 
-            @Override
-            public void onError(int code, String message, Object data) throws JSONException {
+                @Override
+                public void onError(int code, String message, Object data) throws JSONException {
 
-            }
-        });
+                }
+            });
+        }
+
 
         purchase.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -113,7 +117,8 @@ public class ProductDetails extends AbstractActivity {
         });
 
     }
-    protected void purchaseDialog(){
+
+    protected void purchaseDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("提示");
         builder.setMessage("确认要买吗");
@@ -126,7 +131,7 @@ public class ProductDetails extends AbstractActivity {
                         ProductDetails.this.api().payOrder(data.id, new ApiCallback<String>() {
                             @Override
                             public void onSuccess(String data) throws JSONException {
-                                if(data == "购买成功"){
+                                if (data == "购买成功") {
                                     return;
                                 }
                             }
@@ -160,7 +165,7 @@ public class ProductDetails extends AbstractActivity {
 
 
     //上架商品和修改商品时的对话弹窗
-    protected void modify_Dialog(){
+    protected void modify_Dialog() {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         final AlertDialog dialog = builder.create();
@@ -186,23 +191,22 @@ public class ProductDetails extends AbstractActivity {
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                 intent.setType("image/*");//设置图片类型
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
-                startActivityForResult(intent,1);
+                startActivityForResult(intent, 1);
             }
         });
-
 
 
         confirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String name,description,price,amount;
+                String name, description, price, amount;
                 name = product_name.getText().toString();
                 price = product_price.getText().toString();
                 amount = product_amount.getText().toString();
                 description = product_description.getText().toString();
                 if (name.equals("") || price.equals("") || amount.equals("") || description.equals("")) {
                     api().showToast("商品名，价格，数量，描述均不能为空");
-                }else {
+                } else {
                     ProductInfo pi = new ProductInfo();
                     pi.id = ID;
                     pi.productName = name;
@@ -211,12 +215,11 @@ public class ProductDetails extends AbstractActivity {
                     pi.productPrice = Integer.parseInt(price);
 
 
-
                     api().modifyProduct(pi, new ApiCallback<ProductInfo>() {
                         @Override
                         public void onSuccess(ProductInfo data) throws JSONException {
                             String path = img_file_path.getText().toString();
-                            if(!path.equals("")) {
+                            if (!path.equals("")) {
                                 File file = compressImg(path);
                                 api().uploadImage(data.id, file, new ApiCallback<String>() {
                                     @Override
@@ -230,7 +233,7 @@ public class ProductDetails extends AbstractActivity {
 
                                     }
                                 });
-                            }else {
+                            } else {
                                 api().showToast("img_file_path为空！");
                             }
                         }
@@ -259,7 +262,7 @@ public class ProductDetails extends AbstractActivity {
         if (resultCode == Activity.RESULT_OK) {//是否选择，没选择就不会继续
             Uri uri = data.getData();//得到uri，后面就是将uri转化成file的过程。
             String[] proj = {MediaStore.Images.Media.DATA};
-            Cursor actualimagecursor = getContentResolver().query(uri,proj,null,null,null);
+            Cursor actualimagecursor = getContentResolver().query(uri, proj, null, null, null);
             int actual_image_column_index = actualimagecursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
             actualimagecursor.moveToFirst();
             String img_path = actualimagecursor.getString(actual_image_column_index);
@@ -267,8 +270,9 @@ public class ProductDetails extends AbstractActivity {
             api().showToast(img_path);
         }
     }
+
     //压缩图片
-    protected File compressImg(String path){
+    protected File compressImg(String path) {
         SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
         Date date = new Date(System.currentTimeMillis());
         //图片名
@@ -277,9 +281,9 @@ public class ProductDetails extends AbstractActivity {
         File file = new File(Environment.getExternalStorageDirectory(), filename + ".png");
         try {
             FileInputStream fis = new FileInputStream(path);
-            Bitmap bitmap  = BitmapFactory.decodeStream(fis);
+            Bitmap bitmap = BitmapFactory.decodeStream(fis);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            if(bitmap == null) Log.e("Fuck","bitmap is null");
+            if (bitmap == null) Log.e("Fuck", "bitmap is null");
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);// 质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
             int options = 90;
             while (baos.toByteArray().length / 1024 > 1024) { // 循环判断如果压缩后图片是否大于1mb,大于继续压缩
@@ -289,8 +293,8 @@ public class ProductDetails extends AbstractActivity {
             }
             //此时压缩的数据已经都在baos里面了,接下来把baos里面的数据传给file即可。
             try {
-                if(!file.exists()) this.createFile(file);
-                else Log.e("Fuck","file exist");
+                if (!file.exists()) this.createFile(file);
+                else Log.e("Fuck", "file exist");
                 FileOutputStream fos = new FileOutputStream(file);
                 try {
                     fos.write(baos.toByteArray());
@@ -301,7 +305,7 @@ public class ProductDetails extends AbstractActivity {
                     e.printStackTrace();
                 }
             } catch (FileNotFoundException e) {
-                Log.e("Fuck","can't come to this fos");
+                Log.e("Fuck", "can't come to this fos");
                 e.printStackTrace();
             }
 
@@ -315,7 +319,7 @@ public class ProductDetails extends AbstractActivity {
             }
             // recycleBitmap(bitmap);
         } catch (FileNotFoundException e) {
-            Log.e("Fuck","can't come to this fis    "+e.toString());
+            Log.e("Fuck", "can't come to this fis    " + e.toString());
             e.printStackTrace();
 
         }
@@ -346,24 +350,23 @@ public class ProductDetails extends AbstractActivity {
         return file;
     }
 
-    private String createFile(File file){
-        try{
-            if(file.getParentFile().exists()){
+    private String createFile(File file) {
+        try {
+            if (file.getParentFile().exists()) {
 
-                Log.e("Fuck","create file");
+                Log.e("Fuck", "create file");
                 file.createNewFile();
-            }
-            else {
+            } else {
 
-                Log.e("Fuck","文件夹不存在");
+                Log.e("Fuck", "文件夹不存在");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return "";
     }
 
-    protected void confirm_pulloff(){
+    protected void confirm_pulloff() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
             @Override
@@ -393,10 +396,12 @@ public class ProductDetails extends AbstractActivity {
         builder.show();
     }
 }
+
 class ImageGetter extends AsyncTask<String, Integer, Bitmap> {
 
     ImageView iv;
-    public ImageGetter(ImageView imageView){
+
+    public ImageGetter(ImageView imageView) {
         iv = imageView;
     }
 
@@ -404,7 +409,7 @@ class ImageGetter extends AsyncTask<String, Integer, Bitmap> {
     protected Bitmap doInBackground(String... objs) {
         Bitmap image = null;
         try {
-            InputStream is = new java.net.URL((String)objs[0]).openStream();
+            InputStream is = new java.net.URL((String) objs[0]).openStream();
             image = BitmapFactory.decodeStream(is);
             is.close();
         } catch (Exception e) {

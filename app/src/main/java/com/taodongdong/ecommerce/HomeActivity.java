@@ -1,4 +1,5 @@
 package com.taodongdong.ecommerce;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -7,6 +8,7 @@ import android.content.res.Resources;
 import android.Manifest;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.UrlQuerySanitizer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -47,6 +49,7 @@ import com.taodongdong.ecommerce.prouctlistview.ProductListAdapter;
 
 import org.json.JSONException;
 
+import java.io.InputStream;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -90,6 +93,10 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
     private TextView money;
     private static int IMAGE = 1;
 
+    private Uri uploadImgUri;
+    private StoreInfo storeInfo;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,7 +114,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
         //检测是否有权限，如果没有权限，就需要申请
         if (storagePermission != PackageManager.PERMISSION_GRANTED) {
             //申请权限
-            requestPermissions(PERMISSIONS,0);
+            requestPermissions(PERMISSIONS, 0);
             //返回false。说明没有授权
         }
 
@@ -150,28 +157,28 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
         });
         productList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id){
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 int ID = HomeActivity.this.plAdapter.getItem(position).getID();
                 Bundle b = new Bundle();
-                b.putInt("id",ID);
+                b.putInt("id", ID);
                 Intent intent = new Intent();
                 intent.putExtras(b);
-                intent.putExtra("authority","0");
-                intent.setClass(HomeActivity.this,ProductDetails.class);
+                intent.putExtra("authority", "0");
+                intent.setClass(HomeActivity.this, ProductDetails.class);
                 startActivity(intent);
 
             }
         });
         myshopList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id){
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 int ID = HomeActivity.this.myshopAdapter.getItem(position).getID();
                 Bundle b = new Bundle();
-                b.putInt("id",ID);
+                b.putInt("id", ID);
                 Intent intent = new Intent();
                 intent.putExtras(b);
-                intent.putExtra("authority","1");
-                intent.setClass(HomeActivity.this,ProductDetails.class);
+                intent.putExtra("authority", "1");
+                intent.setClass(HomeActivity.this, ProductDetails.class);
                 startActivity(intent);
 
             }
@@ -194,6 +201,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
                         shopImg.setImageResource(R.mipmap.ic_launcher);
                         break;
                     case 1:
+                        //TODO 更新我的商店列表
                         myshopImg.setImageResource(R.mipmap.ic_launcher);
                         break;
                     case 2:
@@ -213,14 +221,14 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
             public void onClick(View v) {
                 //TODO 跳转到订单页面
                 Bundle b = new Bundle();
-                if(v == orderBuy){
-                    b.putInt("type",OrderActivity.BUY_ORDER);
-                }else{
-                    b.putInt("type",OrderActivity.SALE_ORDER);
+                if (v == orderBuy) {
+                    b.putInt("type", OrderActivity.BUY_ORDER);
+                } else {
+                    b.putInt("type", OrderActivity.SALE_ORDER);
                 }
                 Intent intent = new Intent();
                 intent.putExtras(b);
-                intent.setClass(HomeActivity.this,OrderActivity.class);
+                intent.setClass(HomeActivity.this, OrderActivity.class);
                 startActivity(intent);
             }
         };
@@ -291,11 +299,11 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
         View tab2 = inflater.inflate(R.layout.myshop, null);
         View tab3 = inflater.inflate(R.layout.usr, null);
 
-        searchView = (SearchView)tab1.findViewById(R.id.search_products);
-        productList = (ListView)tab1.findViewById(R.id.id_shop_list);
-        myshopList = (ListView)tab2.findViewById(R.id.id_myshop_list);
-        orderBuy = (TextView)tab3.findViewById(R.id.manage_buy_order);
-        orderSale = (TextView)tab3.findViewById(R.id.manage_sale_order);
+        searchView = (SearchView) tab1.findViewById(R.id.search_products);
+        productList = (ListView) tab1.findViewById(R.id.id_shop_list);
+        myshopList = (ListView) tab2.findViewById(R.id.id_myshop_list);
+        orderBuy = (TextView) tab3.findViewById(R.id.manage_buy_order);
+        orderSale = (TextView) tab3.findViewById(R.id.manage_sale_order);
         put_on_sale = (Button) tab2.findViewById(R.id.put_on_sale);
         money = (TextView) tab3.findViewById(R.id.balance);
         reg_saler = (Button) tab3.findViewById(R.id.reg_saler);
@@ -305,9 +313,9 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
             @Override
             public void onSuccess(UserInfo data) throws JSONException {
                 HomeActivity.this.userInfo = data;
-                if(userInfo.authority == 0){
+                if (userInfo.authority == 0) {
                     orderSale.setVisibility(View.GONE);
-                }else{
+                } else {
                     reg_saler.setVisibility(View.GONE);
                 }
             }
@@ -319,8 +327,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
         });
 
 
-
-        if(productList == null){
+        if (productList == null) {
             Log.e("init", "initViews: null listview");
         }
 
@@ -345,27 +352,31 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
             case R.id.id_tab_myshop:
                 api().showToast(" tab 2");
 
+                if(this.userInfo.authority == 0){
+
+                    break;
+                }
                 api().getMyStoreInfo(new ApiCallback<StoreInfo>() {
                     @Override
                     public void onSuccess(StoreInfo data) throws JSONException {
-                        final StoreInfo s = data;
+                        storeInfo = data;
                         mViewpager.setCurrentItem(1);
                         //还需api来实现
                         put_on_sale.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 //点击后可以用对话框的方式来但是也是要写一个view传给对话框
-                                HomeActivity.this.myDialog(s.id);//上架商品
-
+                                HomeActivity.this.myDialog();//上架商品
 
                             }
                         });
+                        refreshShopList();
 
                     }
 
                     @Override
                     public void onError(int code, String message, Object data) throws JSONException {
-                        switch (code){
+                        switch (code) {
                             case Errors.NOT_LOGIN:
                                 api().showToast("NOT_LOGIN");
                                 break;
@@ -390,16 +401,33 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
     }
 
     //将四个ImageButton设置成灰色
-    private void resetImgs () {
+    private void resetImgs() {
         //TODO 添加图标
         shopImg.setImageResource(R.mipmap.ic_launcher);
         myshopImg.setImageResource(R.mipmap.ic_launcher);
         usrImg.setImageResource(R.mipmap.ic_launcher);
 
     }
+    private void refreshShopList(){
+        api().getAllProducts(this.storeInfo.id, 1, 10, new ApiCallback<Page<ProductInfo>>() {
+            @Override
+            public void onSuccess(Page<ProductInfo> data) throws JSONException {
+                Log.e("tdd:", "上传图片成功");
+                HomeActivity.this.myshopAdapter.clear();
+                if (data.data == null) Log.e("tdd:", "获取商品列表为空");
+                ProductItem.Factory.convertFromProductInfo(Arrays.asList(data.data), HomeActivity.this.myshopAdapter);
+                myshopAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onError(int code, String message, Object data) throws JSONException {
+                Log.e("tdd:", "上传图片，上架失败：" + message + "code :" + code);
+            }
+        });//重新获取商品所有的信息
+    }
 
     //上架商品对话弹窗
-    protected void myDialog(int sid){
+    protected void myDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         final AlertDialog dialog = builder.create();
         View dialogView = View.inflate(this, R.layout.fill_product_detail, null);
@@ -412,11 +440,11 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
         final EditText product_price = dialogView.findViewById(R.id.product_unit_price);
         final EditText product_amount = dialogView.findViewById(R.id.product_amount);
         final EditText product_description = dialogView.findViewById(R.id.product_description);
-        final int storeid = sid;
 
         Button confirm = dialogView.findViewById(R.id.confirm_product_info);
         Button btn_cancel = dialogView.findViewById(R.id.cancel_product_info);
         Button upload_img = dialogView.findViewById(R.id.upload_img);
+        uploadImgUri = null;
 
         upload_img.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -430,45 +458,38 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
         });
 
 
-
         confirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String name,description,price,amount;
+                String name, description, price, amount;
                 name = product_name.getText().toString();
                 price = product_price.getText().toString();
                 amount = product_amount.getText().toString();
                 description = product_description.getText().toString();
                 if (name.equals("") || price.equals("") || amount.equals("") || description.equals("")) {
                     api().showToast("商品名，价格，数量，描述均不能为空");
-                }else {
+                } else {
                     api().createProduct(name, Integer.parseInt(price), Integer.parseInt(amount), description, new ApiCallback<ProductInfo>() {
                         @Override
                         public void onSuccess(ProductInfo data) throws JSONException {
                             String path = img_file_path.getText().toString();
-                            Log.i("tdd:","创建商品成功");
-                            if(!path.equals("")) {
-                                Log.e("Fuck",path);
-                                File file = compressImg(path);
+                            Log.i("tdd:", "创建商品成功");
+                            if (!path.equals("")) {
+                                Log.e("Fuck", path);
+                                File file = null;
+                                try {
+                                    InputStream fin = getContentResolver().openInputStream(uploadImgUri);
+                                    file = compressImg(fin);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    return;
+                                }
+
                                 api().uploadImage(data.id, file, new ApiCallback<String>() {
                                     @Override
                                     public void onSuccess(String data) throws JSONException {
                                         api().showToast("上架商品成功");
-                                        api().getAllProducts(storeid, 1, 10, new ApiCallback<Page<ProductInfo>>() {
-                                            @Override
-                                            public void onSuccess(Page<ProductInfo> data) throws JSONException {
-                                                Log.e("tdd:","上传图片成功");
-                                                HomeActivity.this.myshopAdapter.clear();
-                                                if(data.data == null) Log.e("tdd:","获取商品列表为空");
-                                                ProductItem.Factory.convertFromProductInfo(Arrays.asList(data.data), HomeActivity.this.myshopAdapter);
-                                                myshopAdapter.notifyDataSetChanged();
-                                            }
-
-                                            @Override
-                                            public void onError(int code, String message, Object data) throws JSONException {
-                                                Log.e("tdd:","上传图片，上架失败：" + message + "code :" + code);
-                                            }
-                                        });//重新获取商品所有的信息
+                                        refreshShopList();
                                         dialog.dismiss();
                                     }
 
@@ -477,7 +498,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
 
                                     }
                                 });
-                            }else {
+                            } else {
                                 api().showToast("img_file_path为空！");
                             }
                         }
@@ -519,11 +540,11 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
 //        }
 //    }
 
-    private void refreshUserInfo(){
+    private void refreshUserInfo() {
         View tab = userInfoPage;
-        final TextView user = (TextView)tab.findViewById(R.id.user);
-        final TextView balance = (TextView)tab.findViewById(R.id.balance);
-        api().getUserInfo(new ApiCallback<UserInfo>(){
+        final TextView user = (TextView) tab.findViewById(R.id.user);
+        final TextView balance = (TextView) tab.findViewById(R.id.balance);
+        api().getUserInfo(new ApiCallback<UserInfo>() {
 
             @Override
             public void onSuccess(UserInfo data) throws JSONException {
@@ -553,6 +574,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
 //            img_file_path.setText(img_path);
 //            api().showToast(img_path);
             Uri selectedImage = data.getData();
+            uploadImgUri = selectedImage;
             String[] filePathColumns = {MediaStore.Images.Media.DATA};
             Cursor c = getContentResolver().query(selectedImage, filePathColumns, null, null, null);
             c.moveToFirst();
@@ -565,57 +587,41 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
         }
     }
 
-    protected File compressImg(String path){
+    protected File compressImg(InputStream fin) {
         SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
         Date date = new Date(System.currentTimeMillis());
         //图片名
         String filename = format.format(date);
 
         File file = new File(Environment.getExternalStorageDirectory(), filename + ".png");
+        Bitmap bitmap = BitmapFactory.decodeStream(fin);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        if (bitmap == null) Log.e("Fuck", "bitmap is null");
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);// 质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
+        int options = 90;
+        while (baos.toByteArray().length / 1024 > 1024) { // 循环判断如果压缩后图片是否大于1mb,大于继续压缩
+            baos.reset(); // 重置baos即清空baos
+            bitmap.compress(Bitmap.CompressFormat.JPEG, options, baos);// 这里压缩options%，把压缩后的数据存放到baos中
+            options -= 10;// 每次都减少10
+        }
+        //此时压缩的数据已经都在baos里面了,接下来把baos里面的数据传给file即可。
         try {
-            FileInputStream fis = new FileInputStream(path);
-            Bitmap bitmap  = BitmapFactory.decodeStream(fis);
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            if(bitmap == null) Log.e("Fuck","bitmap is null");
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);// 质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
-            int options = 90;
-            while (baos.toByteArray().length / 1024 > 1024) { // 循环判断如果压缩后图片是否大于1mb,大于继续压缩
-                baos.reset(); // 重置baos即清空baos
-                bitmap.compress(Bitmap.CompressFormat.JPEG, options, baos);// 这里压缩options%，把压缩后的数据存放到baos中
-                options -= 10;// 每次都减少10
-            }
-            //此时压缩的数据已经都在baos里面了,接下来把baos里面的数据传给file即可。
+            if (!file.exists()) this.createFile(file);
+            else Log.e("Fuck", "file exist");
+            FileOutputStream fos = new FileOutputStream(file);
             try {
-                if(!file.exists()) this.createFile(file);
-                else Log.e("Fuck","file exist");
-                FileOutputStream fos = new FileOutputStream(file);
-                try {
-                    fos.write(baos.toByteArray());
-                    fos.flush();
-                    fos.close();
-                } catch (IOException e) {
-
-                    e.printStackTrace();
-                }
-            } catch (FileNotFoundException e) {
-                Log.e("Fuck","can't come to this fos");
-                e.printStackTrace();
-            }
-
-            try {
-
-
-                fis.close();
+                fos.write(baos.toByteArray());
+                fos.flush();
+                fos.close();
             } catch (IOException e) {
 
                 e.printStackTrace();
             }
-            // recycleBitmap(bitmap);
         } catch (FileNotFoundException e) {
-            Log.e("Fuck","can't come to this fis    "+e.toString());
+            Log.e("Fuck", "can't come to this fos");
             e.printStackTrace();
-
         }
+        // recycleBitmap(bitmap);
         //
 //        BitmapFactory.Options newOpts = new BitmapFactory.Options();
         // 开始读入图片，此时把options.inJustDecodeBounds 设回true了
@@ -643,24 +649,23 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
         return file;
     }
 
-    private String createFile(File file){
-        try{
-            if(file.getParentFile().exists()){
+    private String createFile(File file) {
+        try {
+            if (file.getParentFile().exists()) {
 
-                Log.e("Fuck","create file");
+                Log.e("Fuck", "create file");
                 file.createNewFile();
-            }
-            else {
+            } else {
 
-                Log.e("Fuck","文件夹不存在");
+                Log.e("Fuck", "文件夹不存在");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return "";
     }
 
-    protected void recharge_dialog(){
+    protected void recharge_dialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         final AlertDialog dialog = builder.create();
         View dialogView = View.inflate(this, R.layout.recharge, null);
@@ -678,7 +683,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
             @Override
             public void onClick(View v) {
                 String num = recharge.getText().toString();
-                if(!num.equals("")){
+                if (!num.equals("")) {
                     api().recharge(Integer.parseInt(num), new ApiCallback<UserInfo>() {
                         @Override
                         public void onSuccess(UserInfo data) throws JSONException {
@@ -704,7 +709,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
         });
     }
 
-    protected void confirm_reg(){
+    protected void confirm_reg() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
             @Override
