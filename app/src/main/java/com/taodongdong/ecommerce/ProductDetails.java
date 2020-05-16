@@ -14,6 +14,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -30,6 +31,7 @@ import org.json.JSONException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -273,57 +275,92 @@ public class ProductDetails extends AbstractActivity {
         String filename = format.format(date);
 
         File file = new File(Environment.getExternalStorageDirectory(), filename + ".png");
-
-        //
-        BitmapFactory.Options newOpts = new BitmapFactory.Options();
-        // 开始读入图片，此时把options.inJustDecodeBounds 设回true了
-        newOpts.inJustDecodeBounds = true;
-        Bitmap bitmap = BitmapFactory.decodeFile(path, newOpts);// 此时返回bm为空
-        newOpts.inJustDecodeBounds = false;
-        int w = newOpts.outWidth;
-        int h = newOpts.outHeight;
-        // 现在主流手机比较多是800*480分辨率，所以高和宽我们设置为
-        float hh = 800f;// 这里设置高度为800f
-        float ww = 480f;// 这里设置宽度为480f
-        // 缩放比。由于是固定比例缩放，只用高或者宽其中一个数据进行计算即可
-        int be = 1;// be=1表示不缩放
-        if (w > h && w > ww) {// 如果宽度大的话根据宽度固定大小缩放
-            be = (int) (newOpts.outWidth / ww);
-        } else if (w < h && h > hh) {// 如果高度高的话根据宽度固定大小缩放
-            be = (int) (newOpts.outHeight / hh);
-        }
-        if (be <= 0)
-            be = 1;
-        newOpts.inSampleSize = be;// 设置缩放比例
-        // 重新读入图片，注意此时已经把options.inJustDecodeBounds 设回false了
-        bitmap = BitmapFactory.decodeFile(path, newOpts);
-        //以上完成按大小压缩图片，接下来再按质量压缩图片。
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);// 质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
-        int options = 90;
-        while (baos.toByteArray().length / 1024 > 1024) { // 循环判断如果压缩后图片是否大于1mb,大于继续压缩
-            baos.reset(); // 重置baos即清空baos
-            bitmap.compress(Bitmap.CompressFormat.JPEG, options, baos);// 这里压缩options%，把压缩后的数据存放到baos中
-            options -= 10;// 每次都减少10
-        }
-        //此时压缩的数据已经都在baos里面了,接下来把baos里面的数据传给file即可。
         try {
-            FileOutputStream fos = new FileOutputStream(file);
+            FileInputStream fis = new FileInputStream(path);
+            Bitmap bitmap  = BitmapFactory.decodeStream(fis);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            if(bitmap == null) Log.e("Fuck","bitmap is null");
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);// 质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
+            int options = 90;
+            while (baos.toByteArray().length / 1024 > 1024) { // 循环判断如果压缩后图片是否大于1mb,大于继续压缩
+                baos.reset(); // 重置baos即清空baos
+                bitmap.compress(Bitmap.CompressFormat.JPEG, options, baos);// 这里压缩options%，把压缩后的数据存放到baos中
+                options -= 10;// 每次都减少10
+            }
+            //此时压缩的数据已经都在baos里面了,接下来把baos里面的数据传给file即可。
             try {
-                fos.write(baos.toByteArray());
-                fos.flush();
-                fos.close();
+                if(!file.exists()) this.createFile(file);
+                else Log.e("Fuck","file exist");
+                FileOutputStream fos = new FileOutputStream(file);
+                try {
+                    fos.write(baos.toByteArray());
+                    fos.flush();
+                    fos.close();
+                } catch (IOException e) {
+
+                    e.printStackTrace();
+                }
+            } catch (FileNotFoundException e) {
+                Log.e("Fuck","can't come to this fos");
+                e.printStackTrace();
+            }
+
+            try {
+
+
+                fis.close();
             } catch (IOException e) {
 
                 e.printStackTrace();
             }
+            // recycleBitmap(bitmap);
         } catch (FileNotFoundException e) {
+            Log.e("Fuck","can't come to this fis    "+e.toString());
+            e.printStackTrace();
 
+        }
+        //
+//        BitmapFactory.Options newOpts = new BitmapFactory.Options();
+        // 开始读入图片，此时把options.inJustDecodeBounds 设回true了
+//        newOpts.inJustDecodeBounds = true;
+//        newOpts.inJustDecodeBounds = false;
+//        int w = newOpts.outWidth;
+//        int h = newOpts.outHeight;
+//        // 现在主流手机比较多是800*480分辨率，所以高和宽我们设置为
+//        float hh = 800f;// 这里设置高度为800f
+//        float ww = 480f;// 这里设置宽度为480f
+//        // 缩放比。由于是固定比例缩放，只用高或者宽其中一个数据进行计算即可
+//        int be = 1;// be=1表示不缩放
+//        if (w > h && w > ww) {// 如果宽度大的话根据宽度固定大小缩放
+//            be = (int) (newOpts.outWidth / ww);
+//        } else if (w < h && h > hh) {// 如果高度高的话根据宽度固定大小缩放
+//            be = (int) (newOpts.outHeight / hh);
+//        }
+//        if (be <= 0)
+//            be = 1;
+//        newOpts.inSampleSize = be;// 设置缩放比例
+        // 重新读入图片，注意此时已经把options.inJustDecodeBounds 设回false了
+//        bitmap = BitmapFactory.decodeFile(path, newOpts);
+        //以上完成按大小压缩图片，接下来再按质量压缩图片。
+
+        return file;
+    }
+
+    private String createFile(File file){
+        try{
+            if(file.getParentFile().exists()){
+
+                Log.e("Fuck","create file");
+                file.createNewFile();
+            }
+            else {
+
+                Log.e("Fuck","文件夹不存在");
+            }
+        }catch (Exception e){
             e.printStackTrace();
         }
-
-        // recycleBitmap(bitmap);
-        return file;
+        return "";
     }
 
     protected void confirm_pulloff(){
@@ -332,7 +369,17 @@ public class ProductDetails extends AbstractActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 //下架商品记得补充！！！！
+                api().removeProduct(ID, new ApiCallback<String>() {
+                    @Override
+                    public void onSuccess(String data) throws JSONException {
+                        api().showToast("下架商品成功");
+                    }
 
+                    @Override
+                    public void onError(int code, String message, Object data) throws JSONException {
+                        api().showToast("下架商品失败");
+                    }
+                });
             }
         });
         builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {

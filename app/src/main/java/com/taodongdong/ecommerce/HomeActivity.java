@@ -459,6 +459,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
                                             public void onSuccess(Page<ProductInfo> data) throws JSONException {
                                                 Log.e("tdd:","上传图片成功");
                                                 HomeActivity.this.myshopAdapter.clear();
+                                                if(data.data == null) Log.e("tdd:","获取商品列表为空");
                                                 ProductItem.Factory.convertFromProductInfo(Arrays.asList(data.data), HomeActivity.this.myshopAdapter);
                                                 myshopAdapter.notifyDataSetChanged();
                                             }
