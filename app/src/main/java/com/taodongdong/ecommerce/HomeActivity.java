@@ -415,7 +415,6 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
         api().getAllProducts(this.storeInfo.id, 1, 10, new ApiCallback<Page<ProductInfo>>() {
             @Override
             public void onSuccess(Page<ProductInfo> data) throws JSONException {
-                Log.e("tdd:", "上传图片成功");
                 HomeActivity.this.myshopAdapter.clear();
                 if (data.data == null) Log.e("tdd:", "获取商品列表为空");
                 ProductItem.Factory.convertFromProductInfo(Arrays.asList(data.data), HomeActivity.this.myshopAdapter);

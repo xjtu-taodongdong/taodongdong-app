@@ -411,6 +411,7 @@ public class ProductDetails extends AbstractActivity {
                         api().showToast("下架商品失败");
                     }
                 });
+                dialog.cancel();
             }
         });
         builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -427,7 +428,7 @@ public class ProductDetails extends AbstractActivity {
 
 class ImageGetter extends AsyncTask<String, Integer, Bitmap> {
 
-    ImageView iv;
+    private ImageView iv;
 
     public ImageGetter(ImageView imageView) {
         iv = imageView;
