@@ -100,6 +100,16 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
         initDatas();//初始化数据
         initEvents();//初始化事件
 
+        String[] PERMISSIONS = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        int storagePermission = this.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        //检测是否有权限，如果没有权限，就需要申请
+        if (storagePermission != PackageManager.PERMISSION_GRANTED) {
+            //申请权限
+            requestPermissions(PERMISSIONS,0);
+            //返回false。说明没有授权
+        }
 
 
     }
@@ -436,6 +446,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
                         @Override
                         public void onSuccess(ProductInfo data) throws JSONException {
                             String path = img_file_path.getText().toString();
+                            Log.i("tdd:","创建商品成功");
                             if(!path.equals("")) {
                                 Log.e("Fuck",path);
                                 File file = compressImg(path);
@@ -446,6 +457,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
                                         api().getAllProducts(storeid, 1, 10, new ApiCallback<Page<ProductInfo>>() {
                                             @Override
                                             public void onSuccess(Page<ProductInfo> data) throws JSONException {
+                                                Log.e("tdd:","上传图片成功");
                                                 HomeActivity.this.myshopAdapter.clear();
                                                 ProductItem.Factory.convertFromProductInfo(Arrays.asList(data.data), HomeActivity.this.myshopAdapter);
                                                 myshopAdapter.notifyDataSetChanged();
@@ -453,7 +465,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
 
                                             @Override
                                             public void onError(int code, String message, Object data) throws JSONException {
-
+                                                Log.e("tdd:","上传图片，上架失败：" + message + "code :" + code);
                                             }
                                         });//重新获取商品所有的信息
                                         dialog.dismiss();
