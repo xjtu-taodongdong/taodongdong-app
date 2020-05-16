@@ -94,6 +94,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
     private static int IMAGE = 1;
 
     private Uri uploadImgUri;
+    private StoreInfo storeInfo;
 
 
     @Override
@@ -200,6 +201,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
                         shopImg.setImageResource(R.mipmap.ic_launcher);
                         break;
                     case 1:
+                        //TODO 更新我的商店列表
                         myshopImg.setImageResource(R.mipmap.ic_launcher);
                         break;
                     case 2:
@@ -350,21 +352,25 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
             case R.id.id_tab_myshop:
                 api().showToast(" tab 2");
 
+                if(this.userInfo.authority == 0){
+
+                    break;
+                }
                 api().getMyStoreInfo(new ApiCallback<StoreInfo>() {
                     @Override
                     public void onSuccess(StoreInfo data) throws JSONException {
-                        final StoreInfo s = data;
+                        storeInfo = data;
                         mViewpager.setCurrentItem(1);
                         //还需api来实现
                         put_on_sale.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 //点击后可以用对话框的方式来但是也是要写一个view传给对话框
-                                HomeActivity.this.myDialog(s.id);//上架商品
-
+                                HomeActivity.this.myDialog();//上架商品
 
                             }
                         });
+                        refreshShopList();
 
                     }
 
@@ -402,9 +408,26 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
         usrImg.setImageResource(R.mipmap.ic_launcher);
 
     }
+    private void refreshShopList(){
+        api().getAllProducts(this.storeInfo.id, 1, 10, new ApiCallback<Page<ProductInfo>>() {
+            @Override
+            public void onSuccess(Page<ProductInfo> data) throws JSONException {
+                Log.e("tdd:", "上传图片成功");
+                HomeActivity.this.myshopAdapter.clear();
+                if (data.data == null) Log.e("tdd:", "获取商品列表为空");
+                ProductItem.Factory.convertFromProductInfo(Arrays.asList(data.data), HomeActivity.this.myshopAdapter);
+                myshopAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onError(int code, String message, Object data) throws JSONException {
+                Log.e("tdd:", "上传图片，上架失败：" + message + "code :" + code);
+            }
+        });//重新获取商品所有的信息
+    }
 
     //上架商品对话弹窗
-    protected void myDialog(int sid) {
+    protected void myDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         final AlertDialog dialog = builder.create();
         View dialogView = View.inflate(this, R.layout.fill_product_detail, null);
@@ -417,7 +440,6 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
         final EditText product_price = dialogView.findViewById(R.id.product_unit_price);
         final EditText product_amount = dialogView.findViewById(R.id.product_amount);
         final EditText product_description = dialogView.findViewById(R.id.product_description);
-        final int storeid = sid;
 
         Button confirm = dialogView.findViewById(R.id.confirm_product_info);
         Button btn_cancel = dialogView.findViewById(R.id.cancel_product_info);
@@ -467,21 +489,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
                                     @Override
                                     public void onSuccess(String data) throws JSONException {
                                         api().showToast("上架商品成功");
-                                        api().getAllProducts(storeid, 1, 10, new ApiCallback<Page<ProductInfo>>() {
-                                            @Override
-                                            public void onSuccess(Page<ProductInfo> data) throws JSONException {
-                                                Log.e("tdd:", "上传图片成功");
-                                                HomeActivity.this.myshopAdapter.clear();
-                                                if (data.data == null) Log.e("tdd:", "获取商品列表为空");
-                                                ProductItem.Factory.convertFromProductInfo(Arrays.asList(data.data), HomeActivity.this.myshopAdapter);
-                                                myshopAdapter.notifyDataSetChanged();
-                                            }
-
-                                            @Override
-                                            public void onError(int code, String message, Object data) throws JSONException {
-                                                Log.e("tdd:", "上传图片，上架失败：" + message + "code :" + code);
-                                            }
-                                        });//重新获取商品所有的信息
+                                        refreshShopList();
                                         dialog.dismiss();
                                     }
 
