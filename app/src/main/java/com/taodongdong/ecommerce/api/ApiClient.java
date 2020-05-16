@@ -294,11 +294,12 @@ public class ApiClient extends AbstractApiClient {
                     Page r = new Page<ProductInfo>();
                     int n = 0;
                     r.total = d.getInt("total");
-                    r.perPage = n = d.getInt("per_page");
+                    r.perPage = d.getInt("per_page");
                     r.currentPage = d.getInt("current_page");
                     r.lastPage = d.getInt("last_page");
                     ProductInfo[] pl = new ProductInfo[n];
                     JSONArray arr = d.getJSONArray("data");
+                    n = arr.length();
                     for (int i = 0; i < n; i++) {
                         ProductInfo p = new ProductInfo();
                         JSONObject dp = arr.getJSONObject(i);
@@ -309,6 +310,7 @@ public class ApiClient extends AbstractApiClient {
                         p.productDescription = dp.getString("product_description");
                         pl[i] = p;
                     }
+                    r.data = pl;
                     standardOnSuccess(callback, r);
                 }
 
@@ -415,11 +417,12 @@ public class ApiClient extends AbstractApiClient {
                     Page r = new Page<ProductInfo>();
                     int n = 0;
                     r.total = d.getInt("total");
-                    r.perPage = n = d.getInt("per_page");
+                    r.perPage = d.getInt("per_page");
                     r.currentPage = d.getInt("current_page");
                     r.lastPage = d.getInt("last_page");
                     ProductInfo[] pl = new ProductInfo[n];
                     JSONArray arr = d.getJSONArray("data");
+                    n = arr.length();
                     for (int i = 0; i < n; i++) {
                         ProductInfo p = new ProductInfo();
                         JSONObject dp = arr.getJSONObject(i);
@@ -430,6 +433,7 @@ public class ApiClient extends AbstractApiClient {
                         p.productDescription = dp.getString("product_description");
                         pl[i] = p;
                     }
+                    r.data = pl;
                     standardOnSuccess(callback, r);
                 }
 
@@ -663,16 +667,18 @@ public class ApiClient extends AbstractApiClient {
                     Page r = new Page<ProductInfo>();
                     int n = 0;
                     r.total = d.getInt("total");
-                    r.perPage = n = d.getInt("per_page");
+                    r.perPage = d.getInt("per_page");
                     r.currentPage = d.getInt("current_page");
                     r.lastPage = d.getInt("last_page");
                     OrderInfo[] ol = new OrderInfo[n];
                     JSONArray arr = d.getJSONArray("data");
+                    n = arr.length();
                     for (int i = 0; i < n; i++) {
                         JSONObject dp = arr.getJSONObject(i);
                         OrderInfo o = OrderInfo.fromJSONObject(dp);
                         ol[i] = o;
                     }
+                    r.data = ol;
                     standardOnSuccess(callback, r);
                 }
 
@@ -706,16 +712,18 @@ public class ApiClient extends AbstractApiClient {
                     Page r = new Page<ProductInfo>();
                     int n = 0;
                     r.total = d.getInt("total");
-                    r.perPage = n = d.getInt("per_page");
+                    r.perPage = d.getInt("per_page");
                     r.currentPage = d.getInt("current_page");
                     r.lastPage = d.getInt("last_page");
                     OrderInfo[] ol = new OrderInfo[n];
                     JSONArray arr = d.getJSONArray("data");
+                    n = arr.length();
                     for (int i = 0; i < n; i++) {
                         JSONObject dp = arr.getJSONObject(i);
                         OrderInfo o = OrderInfo.fromJSONObject(dp);
                         ol[i] = o;
                     }
+                    r.data = ol;
                     standardOnSuccess(callback, r);
                 }
 
@@ -794,6 +802,7 @@ public class ApiClient extends AbstractApiClient {
 
     @Override
     public void onResponseFormatInvalid(JSONObject response, JSONException e) {
+        e.printStackTrace();
         showToast("响应体格式化JSON异常：" + e.getMessage());
     }
 
