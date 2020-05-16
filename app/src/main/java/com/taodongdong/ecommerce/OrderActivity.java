@@ -4,6 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -17,6 +20,7 @@ import com.taodongdong.ecommerce.prouctlistview.ProductListAdapter;
 
 import org.json.JSONException;
 
+import java.io.File;
 import java.util.Arrays;
 
 public class OrderActivity extends AbstractActivity {
@@ -47,7 +51,8 @@ public class OrderActivity extends AbstractActivity {
 
             }
         };
-        int type = savedInstanceState.getInt("type");
+        Intent intent = getIntent();
+        int type = intent.getIntExtra("type",0);
         if(type == BUY_ORDER){
             api().getPurchaserOrders(1,10,callback);
             lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
