@@ -297,9 +297,9 @@ public class ApiClient extends AbstractApiClient {
                     r.perPage = d.getInt("per_page");
                     r.currentPage = d.getInt("current_page");
                     r.lastPage = d.getInt("last_page");
-                    ProductInfo[] pl = new ProductInfo[n];
                     JSONArray arr = d.getJSONArray("data");
                     n = arr.length();
+                    ProductInfo[] pl = new ProductInfo[n];
                     for (int i = 0; i < n; i++) {
                         ProductInfo p = new ProductInfo();
                         JSONObject dp = arr.getJSONObject(i);
@@ -420,9 +420,9 @@ public class ApiClient extends AbstractApiClient {
                     r.perPage = d.getInt("per_page");
                     r.currentPage = d.getInt("current_page");
                     r.lastPage = d.getInt("last_page");
-                    ProductInfo[] pl = new ProductInfo[n];
                     JSONArray arr = d.getJSONArray("data");
                     n = arr.length();
+                    ProductInfo[] pl = new ProductInfo[n];
                     for (int i = 0; i < n; i++) {
                         ProductInfo p = new ProductInfo();
                         JSONObject dp = arr.getJSONObject(i);
@@ -670,9 +670,9 @@ public class ApiClient extends AbstractApiClient {
                     r.perPage = d.getInt("per_page");
                     r.currentPage = d.getInt("current_page");
                     r.lastPage = d.getInt("last_page");
-                    OrderInfo[] ol = new OrderInfo[n];
                     JSONArray arr = d.getJSONArray("data");
                     n = arr.length();
+                    OrderInfo[] ol = new OrderInfo[n];
                     for (int i = 0; i < n; i++) {
                         JSONObject dp = arr.getJSONObject(i);
                         OrderInfo o = OrderInfo.fromJSONObject(dp);
@@ -715,9 +715,9 @@ public class ApiClient extends AbstractApiClient {
                     r.perPage = d.getInt("per_page");
                     r.currentPage = d.getInt("current_page");
                     r.lastPage = d.getInt("last_page");
-                    OrderInfo[] ol = new OrderInfo[n];
                     JSONArray arr = d.getJSONArray("data");
                     n = arr.length();
+                    OrderInfo[] ol = new OrderInfo[n];
                     for (int i = 0; i < n; i++) {
                         JSONObject dp = arr.getJSONObject(i);
                         OrderInfo o = OrderInfo.fromJSONObject(dp);
