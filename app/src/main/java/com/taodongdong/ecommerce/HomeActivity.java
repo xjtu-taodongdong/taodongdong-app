@@ -95,7 +95,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
 
     private Uri uploadImgUri;
     private StoreInfo storeInfo;
-
+    private int tab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,7 +117,10 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
             requestPermissions(PERMISSIONS, 0);
             //返回false。说明没有授权
         }
-
+//        Intent intent = this.getIntent();
+//        String tabbar = intent.getStringExtra("tab");
+//        tab = Integer.parseInt(tabbar);
+//        mViewpager.setCurrentItem(tab);
 
     }
 
@@ -450,8 +453,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
             @Override
             public void onClick(View v) {
                 //上传商品的图片，要调用系统的接口
-                Intent intent = new Intent(Intent.ACTION_PICK,
-                    android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 startActivityForResult(intent, IMAGE);
                 api().showToast("上传图片中");
             }

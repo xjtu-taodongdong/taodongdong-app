@@ -10,23 +10,26 @@
         <ImageButton
             android:id="@+id/id_tab_shop"
             android:clickable="false"
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:src="@mipmap/ic_launcher"
             android:background="#00000000"/>
 
         <ImageButton
             android:id="@+id/id_tab_myshop"
             android:clickable="false"
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:src="@mipmap/ic_launcher"
             android:background="#00000000"/>
         <ImageButton
             android:id="@+id/id_tab_usr"
             android:clickable="false"
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:src="@mipmap/ic_launcher"
             android:background="#00000000"/>
 

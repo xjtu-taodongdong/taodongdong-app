@@ -51,6 +51,8 @@ public class ProductDetails extends AbstractActivity {
     TextView price;
     TextView img_file_path;
     int ID;
+    private static int IMAGE = 1;
+    private Uri uploadImgUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -188,10 +190,9 @@ public class ProductDetails extends AbstractActivity {
             @Override
             public void onClick(View v) {
                 //上传商品的图片，要调用系统的接口
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.setType("image/*");//设置图片类型
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                startActivityForResult(intent, 1);
+                Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(intent, IMAGE);
+                api().showToast("上传图片中");
             }
         });
 
@@ -219,12 +220,39 @@ public class ProductDetails extends AbstractActivity {
                         @Override
                         public void onSuccess(ProductInfo data) throws JSONException {
                             String path = img_file_path.getText().toString();
+                            Log.i("tdd:", "修改商品成功");
                             if (!path.equals("")) {
-                                File file = compressImg(path);
+                                Log.e("Fuck", path);
+                                File file = null;
+                                try {
+                                    InputStream fin = getContentResolver().openInputStream(uploadImgUri);
+                                    file = compressImg(fin);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    return;
+                                }
+
                                 api().uploadImage(data.id, file, new ApiCallback<String>() {
                                     @Override
                                     public void onSuccess(String data) throws JSONException {
-                                        api().showToast("修改商品信息成功");
+                                        api().showToast("修改商品成功并上传了图片");
+                                        api().getProductInfo(ID, new ApiCallback<ProductInfo>() {
+                                            @Override
+                                            public void onSuccess(ProductInfo data) throws JSONException {
+
+                                                ImageGetter ig = new ImageGetter(ProductDetails.this.imageView);
+                                                ig.execute(data.productImage);
+                                                ProductDetails.this.name.setText(data.productName);
+                                                ProductDetails.this.amount.setText(String.valueOf(data.productAmount));
+                                                ProductDetails.this.detail.setText(data.productDescription);
+                                                ProductDetails.this.price.setText(data.getProductPriceReadable());
+                                            }
+
+                                            @Override
+                                            public void onError(int code, String message, Object data) throws JSONException {
+
+                                            }
+                                        });
                                         dialog.dismiss();
                                     }
 
@@ -259,69 +287,64 @@ public class ProductDetails extends AbstractActivity {
     //处理选择图片后的回调，并传输数据
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_OK) {//是否选择，没选择就不会继续
-            Uri uri = data.getData();//得到uri，后面就是将uri转化成file的过程。
-            String[] proj = {MediaStore.Images.Media.DATA};
-            Cursor actualimagecursor = getContentResolver().query(uri, proj, null, null, null);
-            int actual_image_column_index = actualimagecursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            actualimagecursor.moveToFirst();
-            String img_path = actualimagecursor.getString(actual_image_column_index);
-            img_file_path.setText(img_path);
-            api().showToast(img_path);
+        api().showToast("回调开始");
+        if (resultCode == Activity.RESULT_OK && requestCode == IMAGE) {//是否选择，没选择就不会继续
+//            Uri uri = data.getData();//得到uri，后面就是将uri转化成file的过程。
+//            String[] proj = {MediaStore.Images.Media.DATA};
+//            Cursor actualimagecursor = getContentResolver().query(uri,proj,null,null,null);
+//            int actual_image_column_index = actualimagecursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+//            actualimagecursor.moveToFirst();
+//            String img_path = actualimagecursor.getString(actual_image_column_index);
+//            img_file_path.setText(img_path);
+//            api().showToast(img_path);
+            Uri selectedImage = data.getData();
+            uploadImgUri = selectedImage;
+            String[] filePathColumns = {MediaStore.Images.Media.DATA};
+            Cursor c = getContentResolver().query(selectedImage, filePathColumns, null, null, null);
+            c.moveToFirst();
+            int columnIndex = c.getColumnIndex(filePathColumns[0]);
+            String imagePath = c.getString(columnIndex);
+            c.close();
+            img_file_path.setText(imagePath);
+            api().showToast(imagePath);
+
         }
     }
 
     //压缩图片
-    protected File compressImg(String path) {
+    protected File compressImg(InputStream fin) {
         SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
         Date date = new Date(System.currentTimeMillis());
         //图片名
         String filename = format.format(date);
 
         File file = new File(Environment.getExternalStorageDirectory(), filename + ".png");
+        Bitmap bitmap = BitmapFactory.decodeStream(fin);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        if (bitmap == null) Log.e("Fuck", "bitmap is null");
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);// 质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
+        int options = 90;
+        while (baos.toByteArray().length / 1024 > 1024) { // 循环判断如果压缩后图片是否大于1mb,大于继续压缩
+            baos.reset(); // 重置baos即清空baos
+            bitmap.compress(Bitmap.CompressFormat.JPEG, options, baos);// 这里压缩options%，把压缩后的数据存放到baos中
+            options -= 10;// 每次都减少10
+        }
+        //此时压缩的数据已经都在baos里面了,接下来把baos里面的数据传给file即可。
         try {
-            FileInputStream fis = new FileInputStream(path);
-            Bitmap bitmap = BitmapFactory.decodeStream(fis);
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            if (bitmap == null) Log.e("Fuck", "bitmap is null");
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);// 质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
-            int options = 90;
-            while (baos.toByteArray().length / 1024 > 1024) { // 循环判断如果压缩后图片是否大于1mb,大于继续压缩
-                baos.reset(); // 重置baos即清空baos
-                bitmap.compress(Bitmap.CompressFormat.JPEG, options, baos);// 这里压缩options%，把压缩后的数据存放到baos中
-                options -= 10;// 每次都减少10
-            }
-            //此时压缩的数据已经都在baos里面了,接下来把baos里面的数据传给file即可。
+            if (!file.exists()) this.createFile(file);
+            else Log.e("Fuck", "file exist");
+            FileOutputStream fos = new FileOutputStream(file);
             try {
-                if (!file.exists()) this.createFile(file);
-                else Log.e("Fuck", "file exist");
-                FileOutputStream fos = new FileOutputStream(file);
-                try {
-                    fos.write(baos.toByteArray());
-                    fos.flush();
-                    fos.close();
-                } catch (IOException e) {
-
-                    e.printStackTrace();
-                }
-            } catch (FileNotFoundException e) {
-                Log.e("Fuck", "can't come to this fos");
-                e.printStackTrace();
-            }
-
-            try {
-
-
-                fis.close();
+                fos.write(baos.toByteArray());
+                fos.flush();
+                fos.close();
             } catch (IOException e) {
 
                 e.printStackTrace();
             }
-            // recycleBitmap(bitmap);
         } catch (FileNotFoundException e) {
-            Log.e("Fuck", "can't come to this fis    " + e.toString());
+            Log.e("Fuck", "can't come to this fos");
             e.printStackTrace();
-
         }
         //
 //        BitmapFactory.Options newOpts = new BitmapFactory.Options();
@@ -376,6 +399,11 @@ public class ProductDetails extends AbstractActivity {
                     @Override
                     public void onSuccess(String data) throws JSONException {
                         api().showToast("下架商品成功");
+//                        Intent intent = new Intent();
+//                        intent.putExtra("tab", "1");
+//                        intent.setClass(ProductDetails.this, HomeActivity.class);
+//                        startActivity(intent);
+                        ProductDetails.this.finish();
                     }
 
                     @Override

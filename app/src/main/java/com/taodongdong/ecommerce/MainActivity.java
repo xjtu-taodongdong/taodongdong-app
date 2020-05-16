@@ -57,6 +57,7 @@ public class MainActivity extends AbstractActivity {
                     @Override
                     public void onSuccess(String data) throws JSONException {
                         Intent intent = new Intent(MainActivity.this,HomeActivity.class);
+                        intent.putExtra("tab","0");
                         startActivity(intent);
                         MainActivity.this.finish();
                     }
