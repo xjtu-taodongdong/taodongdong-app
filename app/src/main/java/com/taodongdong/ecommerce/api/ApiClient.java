@@ -526,9 +526,7 @@ public class ApiClient extends AbstractApiClient {
             sendRequest("Product.removeProduct", extra, new ApiCallback<Object>() {
                 @Override
                 public void onSuccess(Object data) throws JSONException {
-                    JSONObject d = (JSONObject) data;
-                    String url = d.getString("url");
-                    standardOnSuccess(callback, url);
+                    standardOnSuccess(callback, (String)data);
                 }
 
                 @Override
