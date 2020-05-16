@@ -795,6 +795,7 @@ public class ApiClient extends AbstractApiClient {
     @Override
     public void onResponseFormatInvalid(JSONObject response, JSONException e) {
         showToast("响应体格式化JSON异常：" + e.getMessage());
+        e.printStackTrace();
     }
 
     public void onHandleCallbackJSONException(JSONException e) {
