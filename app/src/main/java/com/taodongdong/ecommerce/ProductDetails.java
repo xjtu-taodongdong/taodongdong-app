@@ -438,6 +438,7 @@ class ImageGetter extends AsyncTask<String, Integer, Bitmap> {
     protected Bitmap doInBackground(String... objs) {
         Bitmap image = null;
         try {
+            Log.i("TDD","img URL:" + (String)objs[0]);
             InputStream is = new java.net.URL((String) objs[0]).openStream();
             image = BitmapFactory.decodeStream(is);
             is.close();

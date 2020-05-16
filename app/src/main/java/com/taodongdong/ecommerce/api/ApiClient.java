@@ -2,6 +2,7 @@ package com.taodongdong.ecommerce.api;
 
 import android.content.Context;
 import android.os.Handler;
+import android.util.Log;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -431,6 +432,7 @@ public class ApiClient extends AbstractApiClient {
                         p.productPrice = dp.getInt("product_price");
                         p.productAmount = dp.getInt("product_amount");
                         p.productDescription = dp.getString("product_description");
+                        p.productImage = dp.getString("product_image");
                         pl[i] = p;
                     }
                     r.data = pl;

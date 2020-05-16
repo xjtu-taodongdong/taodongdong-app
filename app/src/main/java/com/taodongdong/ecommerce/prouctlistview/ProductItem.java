@@ -3,6 +3,7 @@ package com.taodongdong.ecommerce.prouctlistview;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.taodongdong.ecommerce.MainApplication;
 import com.taodongdong.ecommerce.R;
@@ -40,7 +41,9 @@ public class ProductItem {
                 ProductItem item = new ProductItem(list.get(i).productDescription, adapter.defaultImage);
                 item.id = list.get(i).id;
                 adapter.add(item);
+                Log.i("TDD", "image getter initing ");
                 ImageGetter ig = new ImageGetter(adapter, item);
+                ig.execute(list.get(i).productImage);
             }
 
         }
@@ -52,7 +55,9 @@ public class ProductItem {
                 ProductItem item = new ProductItem(txt, adapter.defaultImage);
                 item.id = list.get(i).id;
                 adapter.add(item);
+
                 ImageGetter ig = new ImageGetter(adapter, item);
+                ig.execute(info.productImage);
             }
 
         }
@@ -83,6 +88,7 @@ class ImageGetter extends AsyncTask<String, Integer, Bitmap>{
     protected Bitmap doInBackground(String... objs) {
         Bitmap image = null;
         try {
+            Log.i("TDD", "image getting "+ (String)objs[0]);
             InputStream is = new java.net.URL((String)objs[0]).openStream();
             image = BitmapFactory.decodeStream(is);
             is.close();

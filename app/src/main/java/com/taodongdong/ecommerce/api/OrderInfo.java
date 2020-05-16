@@ -1,5 +1,7 @@
 package com.taodongdong.ecommerce.api;
 
+import android.util.Log;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -52,6 +54,7 @@ public class OrderInfo {
      * @throws JSONException
      */
     public static OrderInfo fromJSONObject(JSONObject d) throws JSONException {
+
         OrderInfo o = new OrderInfo();
         o.id = d.getInt("id");
         o.productId = d.getInt("product_id");

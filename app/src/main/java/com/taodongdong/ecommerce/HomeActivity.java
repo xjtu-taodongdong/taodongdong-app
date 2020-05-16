@@ -123,6 +123,11 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
 //        mViewpager.setCurrentItem(tab);
 
     }
+    @Override
+    protected void onResume(){
+        super.onResume();
+        refreshShopList();
+    }
 
     private void initEvents() {
         //设置Tab的点击事件
@@ -490,6 +495,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
                                     @Override
                                     public void onSuccess(String data) throws JSONException {
                                         api().showToast("上架商品成功");
+                                        Log.i("TDD","upload success");
                                         refreshShopList();
                                         dialog.dismiss();
                                     }
