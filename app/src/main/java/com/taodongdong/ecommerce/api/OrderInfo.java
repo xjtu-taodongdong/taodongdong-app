@@ -47,6 +47,20 @@ public class OrderInfo {
      */
     public final static int STATUS_CONFIRMED = 4;
 
+    public String getstatus(){
+        switch(this.orderStatus){
+            case 1:
+                return "未支付";
+            case 2:
+                return "待发货";
+            case 3:
+                return "配送中";
+            case 4:
+                return "已完成";
+        }
+        return "";
+    }
+
     /**
      * 从JSONObject读取一个Order
      * @param d 输入

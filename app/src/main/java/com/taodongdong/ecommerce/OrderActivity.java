@@ -58,7 +58,8 @@ public class OrderActivity extends AbstractActivity {
             lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    confirmOrder();
+                    int orderID = adapter.getItem(position).getID();
+                    confirmOrder(orderID);
                 }
             });
         }else{
@@ -66,24 +67,25 @@ public class OrderActivity extends AbstractActivity {
             lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    sendOrder();
+                    int orderID = adapter.getItem(position).getID();
+                    sendOrder(orderID);
                 }
             });
         }
 
 
     }
-    void sendOrder(){
+    void sendOrder(final int orderID){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("提示");
         builder.setMessage("确认已经发货了吗");
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                OrderActivity.this.api().sendOrder(ID, new ApiCallback<String>() {
+                OrderActivity.this.api().sendOrder(orderID, new ApiCallback<String>() {
                     @Override
                     public void onSuccess(String data) throws JSONException {
-
+                        OrderActivity.this.api().showToast("成功");
                     }
 
                     @Override
@@ -104,14 +106,14 @@ public class OrderActivity extends AbstractActivity {
         });
         builder.show();
     }
-    void confirmOrder(){
+    void confirmOrder(final int orderID){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("提示");
         builder.setMessage("确认收到货了吗");
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                OrderActivity.this.api().confirmOrder(ID, new ApiCallback<String>() {
+                OrderActivity.this.api().confirmOrder(orderID, new ApiCallback<String>() {
                     @Override
                     public void onSuccess(String data) throws JSONException {
 

@@ -24,8 +24,6 @@ import android.widget.TextView;
 import com.taodongdong.ecommerce.api.ApiCallback;
 import com.taodongdong.ecommerce.api.OrderInfo;
 import com.taodongdong.ecommerce.api.ProductInfo;
-import com.taodongdong.ecommerce.prouctlistview.ProductItem;
-import com.taodongdong.ecommerce.prouctlistview.ProductListAdapter;
 
 import org.json.JSONException;
 
@@ -133,9 +131,7 @@ public class ProductDetails extends AbstractActivity {
                         ProductDetails.this.api().payOrder(data.id, new ApiCallback<String>() {
                             @Override
                             public void onSuccess(String data) throws JSONException {
-                                if (data == "购买成功") {
-                                    return;
-                                }
+                                    api().showToast("购买成功");
                             }
 
                             @Override

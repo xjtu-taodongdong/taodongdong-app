@@ -309,6 +309,7 @@ public class ApiClient extends AbstractApiClient {
                         p.productPrice = dp.getInt("product_price");
                         p.productAmount = dp.getInt("product_amount");
                         p.productDescription = dp.getString("product_description");
+                        p.productImage = dp.getString("product_image");
                         pl[i] = p;
                     }
                     r.data = pl;
@@ -579,7 +580,7 @@ public class ApiClient extends AbstractApiClient {
         try {
             JSONObject input = new JSONObject();
             input.put("order_id", orderId);
-            sendRequest("Store.payOrder", input, new ApiCallback<Object>() {
+            sendRequest("Order.payOrder", input, new ApiCallback<Object>() {
                 @Override
                 public void onSuccess(Object data) throws JSONException {
                     standardOnSuccess(callback, (String) data);
@@ -605,7 +606,7 @@ public class ApiClient extends AbstractApiClient {
         try {
             JSONObject input = new JSONObject();
             input.put("order_id", orderId);
-            sendRequest("Store.sendOrder", input, new ApiCallback<Object>() {
+            sendRequest("Order.sendOrder", input, new ApiCallback<Object>() {
                 @Override
                 public void onSuccess(Object data) throws JSONException {
                     standardOnSuccess(callback, (String) data);
@@ -631,7 +632,7 @@ public class ApiClient extends AbstractApiClient {
         try {
             JSONObject input = new JSONObject();
             input.put("order_id", orderId);
-            sendRequest("Store.confirmOrder", input, new ApiCallback<Object>() {
+            sendRequest("Order.confirmOrder", input, new ApiCallback<Object>() {
                 @Override
                 public void onSuccess(Object data) throws JSONException {
                     standardOnSuccess(callback, (String) data);
@@ -660,7 +661,7 @@ public class ApiClient extends AbstractApiClient {
             JSONObject input = new JSONObject();
             input.put("page", page);
             input.put("count", perPage);
-            sendRequest("Store.getMerchantOrders", input, new ApiCallback<Object>() {
+            sendRequest("Order.getMerchantOrders", input, new ApiCallback<Object>() {
                 @Override
                 public void onSuccess(Object data) throws JSONException {
                     JSONObject d = (JSONObject) data;
@@ -705,7 +706,7 @@ public class ApiClient extends AbstractApiClient {
             JSONObject input = new JSONObject();
             input.put("page", page);
             input.put("count", perPage);
-            sendRequest("Store.getPurchaserOrders", input, new ApiCallback<Object>() {
+            sendRequest("Order.getPurchaserOrders", input, new ApiCallback<Object>() {
                 @Override
                 public void onSuccess(Object data) throws JSONException {
                     JSONObject d = (JSONObject) data;

@@ -51,7 +51,7 @@ public class ProductItem {
             adapter.clear();
             for(int i = 0; i < list.size(); i++){
                 OrderInfo info = list.get(i);
-                String txt = String.valueOf(info.purchaserUserId) + " : " + info.productDescription;
+                String txt = String.format("状态：%s,买家：%d,:%s",info.getstatus(),info.purchaserUserId,info.productDescription);
                 ProductItem item = new ProductItem(txt, adapter.defaultImage);
                 item.id = list.get(i).id;
                 adapter.add(item);
