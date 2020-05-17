@@ -22,6 +22,7 @@ public abstract class AbstractApiClient {
     protected static final MediaType FROM_DATA_TYPE = MediaType.parse("multipart/form-data");
 
     protected String token = null;
+    String cache = null;
 
     public AbstractApiClient() {
         okHttpClient = new OkHttpClient();
@@ -158,8 +159,10 @@ public abstract class AbstractApiClient {
     }
 
     protected void onResponse(Response response, ApiCallback<Object> callback) {
+
         try {
             String dataString = response.body().string();
+            cache = dataString;
             try {
                 JSONObject result = new JSONObject(dataString);
                 try {
