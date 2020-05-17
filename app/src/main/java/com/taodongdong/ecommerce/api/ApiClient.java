@@ -798,6 +798,7 @@ public class ApiClient extends AbstractApiClient {
     @Override
     public void onResponseJSONException(JSONException e) {
         showToast("响应体JSON异常" + e.getMessage());
+        e.printStackTrace();
     }
 
     @Override
@@ -809,5 +810,6 @@ public class ApiClient extends AbstractApiClient {
 
     public void onHandleCallbackJSONException(JSONException e) {
         showToast("回调JSON异常" + e.getMessage());
+        e.printStackTrace();
     }
 }

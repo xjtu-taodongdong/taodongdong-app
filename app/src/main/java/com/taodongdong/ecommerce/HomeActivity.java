@@ -126,7 +126,10 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
     @Override
     protected void onResume(){
         super.onResume();
-        refreshShopList();
+        if(this.storeInfo != null){
+            refreshShopList();
+        }
+
     }
 
     private void initEvents() {
