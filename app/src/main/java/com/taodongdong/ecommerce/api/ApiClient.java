@@ -451,6 +451,41 @@ public class ApiClient extends AbstractApiClient {
     }
 
     /**
+     * 修改商品数量
+     * 错误列表 NO_STORE NO_SUCH_PRODUCT NOT_OWNER_MERCHANT
+     * @param id 商品ID
+     * @param amount 新的剩余数量
+     * @param callback 回调参数为更新后的商品详情
+     */
+    public void modifyProductAmount(int id, int amount, final ApiCallback<ProductInfo> callback) {
+        try {
+            JSONObject input = new JSONObject();
+            input.put("id", productInfo.id);
+            input.put("product_amount", amount);
+            sendRequest("Product.modifyProduct", input, new ApiCallback<Object>() {
+                @Override
+                public void onSuccess(Object data) throws JSONException {
+                    JSONObject d = (JSONObject) data;
+                    ProductInfo p = new ProductInfo();
+                    p.id = d.getInt("id");
+                    p.productName = d.getString("product_name");
+                    p.productPrice = d.getInt("product_price");
+                    p.productAmount = d.getInt("product_amount");
+                    p.productDescription = d.getString("product_description");
+                    standardOnSuccess(callback, p);
+                }
+
+                @Override
+                public void onError(int code, String message, Object data) throws JSONException {
+                    standardOnError(callback, code, message, data);
+                }
+            });
+        } catch (JSONException e) {
+            onRequestJSONException(e);
+        }
+    }
+
+    /**
      * 更新商品详情
      * 错误列表 NO_STORE NO_SUCH_PRODUCT NOT_OWNER_MERCHANT
      * @param productInfo 商品详情 ID为必选参数
