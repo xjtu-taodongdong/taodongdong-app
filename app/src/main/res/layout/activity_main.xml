@@ -8,6 +8,13 @@
     android:orientation="vertical"
     tools:context="com.taodongdong.ecommerce.MainActivity">
 
+    <ImageView
+        android:id="@+id/log_page_img"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/projectIcon"
+        app:srcCompat="@drawable/taodongdong" />
+
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
