@@ -546,12 +546,14 @@ public class ApiClient extends AbstractApiClient {
      * 创建订单
      * 错误列表 NOT_LOGIN NO_SUCH_PRODUCT NO_SUCH_STORE
      * @param productId 商品ID
+     * @param orderAmount 要买多少量
      * @param callback 返回订单的全部信息
      */
-    public void createOrder(int productId, final ApiCallback<OrderInfo> callback) {
+    public void createOrder(int productId, int orderAmount, final ApiCallback<OrderInfo> callback) {
         try {
             JSONObject input = new JSONObject();
             input.put("product_id", productId);
+            input.put("order_amount", orderAmount);
             sendRequest("Order.createOrder", input, new ApiCallback<Object>() {
                 @Override
                 public void onSuccess(Object data) throws JSONException {
