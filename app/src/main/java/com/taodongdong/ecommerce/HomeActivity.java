@@ -721,7 +721,6 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                //下架商品记得补充！！！！
                 api().approveMerchant(new ApiCallback<String>() {
                     @Override
                     public void onSuccess(String data) throws JSONException {
