@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -447,6 +448,16 @@ class ImageGetter extends AsyncTask<String, Integer, Bitmap> {
     @Override
     protected void onPostExecute(Bitmap bitmap) {
         super.onPostExecute(bitmap);
+        if(bitmap == null){
+            return;
+        }
+        int src_w = bitmap.getWidth();
+        int src_h = bitmap.getHeight();
+        float scale_w = 200f / src_w;
+        float scale_h = 200f / src_h;
+        Matrix matrix = new Matrix();
+        matrix.postScale(scale_w, scale_h);
+        bitmap = Bitmap.createBitmap(bitmap, 0, 0, src_w, src_h, matrix,true);
         iv.setImageBitmap(bitmap);
     }
 }

@@ -3,6 +3,7 @@ package com.taodongdong.ecommerce.prouctlistview;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +19,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProductListAdapter extends ArrayAdapter<ProductItem> {
-    public static Bitmap defaultImage = BitmapFactory.decodeResource(MainApplication.getApp().getResources(), R.drawable.taodongdong);
+    public static Bitmap defaultImage;
+    static{
+        Bitmap bitmap = BitmapFactory.decodeResource(MainApplication.getApp().getResources(), R.drawable.taodongdong);
+        if(bitmap != null){
+            int src_w = bitmap.getWidth();
+            int src_h = bitmap.getHeight();
+            float scale_w = 200f / src_w;
+            float scale_h = 200f / src_h;
+            Matrix matrix = new Matrix();
+            matrix.postScale(scale_w, scale_h);
+            defaultImage = Bitmap.createBitmap(bitmap, 0, 0, src_w, src_h, matrix,true);
+        }
+    }
+
     public ProductListAdapter(Context context,List<ProductItem> objects){
         super(context, R.layout.list_item_layout,objects);
     }
