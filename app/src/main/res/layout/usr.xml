@@ -6,12 +6,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/imageView3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:srcCompat="@tools:sample/avatars[1]"
-        android:contentDescription="@string/app_name"/>
 
     <TextView
         android:id="@+id/user"
@@ -24,18 +18,20 @@
         android:id="@+id/balance"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="20dp"
+        android:textSize="15dp"
         android:text="0" />
 
     <TextView
         android:id="@+id/manage_buy_order"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textSize="20dp"
         android:text="管理购买订单" />
     <TextView
         android:id="@+id/manage_sale_order"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textSize="20dp"
         android:text="管理出售订单" />
 
     <Button

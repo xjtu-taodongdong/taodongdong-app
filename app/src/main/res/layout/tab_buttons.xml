@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="55dp"
     android:gravity="center"
-    android:background="@color/material_blue_grey_800"
+    android:background="#FFFFF0"
     android:orientation="horizontal">
     <!--TODO 添加图标 -->
 
@@ -13,8 +13,8 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@mipmap/ic_launcher"
-            android:background="#00000000"/>
+            android:src="@drawable/buy"
+            android:background="#00FFFFFF"/>
 
         <ImageButton
             android:id="@+id/id_tab_myshop"
@@ -22,16 +22,14 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@mipmap/ic_launcher"
-            android:background="#00000000"/>
+            android:src="@drawable/shop"
+            android:background="#00FFFFFF"/>
         <ImageButton
             android:id="@+id/id_tab_usr"
             android:clickable="false"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@mipmap/ic_launcher"
-            android:background="#00000000"/>
-
-
+            android:src="@drawable/user"
+            android:background="#00FFFFFF"/>
 </LinearLayout>
