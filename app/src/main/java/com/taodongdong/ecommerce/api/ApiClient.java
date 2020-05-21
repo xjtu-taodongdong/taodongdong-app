@@ -381,6 +381,8 @@ public class ApiClient extends AbstractApiClient {
                     JSONObject d = (JSONObject) data;
                     ProductInfo p = new ProductInfo();
                     p.id = d.getInt("id");
+                    p.storeId = d.getString("store_id");
+                    p.merchantUserId = d.getString("merchant_user_id");
                     p.productName = d.getString("product_name");
                     p.productPrice = d.getInt("product_price");
                     p.productAmount = d.getInt("product_amount");

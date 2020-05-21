@@ -3,6 +3,7 @@ package com.taodongdong.ecommerce.api;
 public class ProductInfo {
     public int id;
     public int storeId;
+    public int merchantUserId;
     public String productName;
     public int productPrice;
     public int productAmount;
