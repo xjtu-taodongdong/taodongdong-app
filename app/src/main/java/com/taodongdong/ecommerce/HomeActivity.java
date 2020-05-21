@@ -314,22 +314,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
         reg_saler = (Button) tab3.findViewById(R.id.reg_saler);
 
         userInfoPage = tab3;
-        api().getUserInfo(new ApiCallback<UserInfo>() {
-            @Override
-            public void onSuccess(UserInfo data) throws JSONException {
-                HomeActivity.this.userInfo = data;
-                if (userInfo.authority == 0) {
-                    orderSale.setVisibility(View.GONE);
-                } else {
-                    reg_saler.setVisibility(View.GONE);
-                }
-            }
 
-            @Override
-            public void onError(int code, String message, Object data) throws JSONException {
-                //TODO 处理错误
-            }
-        });
 
 
         if (productList == null) {
@@ -351,12 +336,25 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
                 api().showToast(" tab 1");
                 //设置viewPager的当前Tab
                 mViewpager.setCurrentItem(0);
+                HomeActivity.this.api().searchProducts("", 1, 10, new ApiCallback<Page<ProductInfo>>() {
+                    @Override
+                    public void onSuccess(Page<ProductInfo> data) throws JSONException {
+                        HomeActivity.this.plAdapter.clear();
+                        ProductItem.Factory.convertFromProductInfo(Arrays.asList(data.data), HomeActivity.this.plAdapter);
+                        plAdapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onError(int code, String message, Object data) throws JSONException {
+                        api().showToast("搜索失败");
+                    }
+                });
                 break;
             case R.id.id_tab_myshop:
                 api().showToast(" tab 2");
 
                 if(this.userInfo.authority == 0){
-
+                    api().showToast(String.valueOf(this.userInfo.authority));
                     break;
                 }
                 api().getMyStoreInfo(new ApiCallback<StoreInfo>() {
@@ -397,6 +395,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
             case R.id.id_tab_usr:
                 api().showToast(" tab 3");
                 mViewpager.setCurrentItem(2);
+                this.refreshUserInfo();
                 break;
         }
     }
@@ -542,6 +541,13 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
             public void onSuccess(UserInfo data) throws JSONException {
                 user.setText("用户名:" + data.username);
                 balance.setText("余额:" + String.valueOf(data.balance));
+                HomeActivity.this.userInfo = data;
+                if (userInfo.authority == 0) {
+                    orderSale.setVisibility(View.GONE);
+                } else {
+                    reg_saler.setVisibility(View.GONE);
+                }
+                Log.e("tdd","authority is "+userInfo.authority);
             }
 
             @Override
@@ -711,6 +717,17 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
                     public void onSuccess(String data) throws JSONException {
                         api().showToast("注册为商家成功");
                         reg_saler.setVisibility(View.GONE);
+                        api().getUserInfo(new ApiCallback<UserInfo>() {
+                            @Override
+                            public void onSuccess(UserInfo data) throws JSONException {
+                                HomeActivity.this.userInfo = data;
+                            }
+
+                            @Override
+                            public void onError(int code, String message, Object data) throws JSONException {
+
+                            }
+                        });
                     }
 
                     @Override
