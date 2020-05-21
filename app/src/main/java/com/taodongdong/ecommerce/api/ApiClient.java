@@ -460,7 +460,7 @@ public class ApiClient extends AbstractApiClient {
     public void modifyProductAmount(int id, int amount, final ApiCallback<ProductInfo> callback) {
         try {
             JSONObject input = new JSONObject();
-            input.put("id", productInfo.id);
+            input.put("id", id);
             input.put("product_amount", amount);
             sendRequest("Product.modifyProduct", input, new ApiCallback<Object>() {
                 @Override
