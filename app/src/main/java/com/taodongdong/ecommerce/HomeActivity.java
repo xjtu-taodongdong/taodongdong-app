@@ -310,6 +310,8 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
         plAdapter = new ProductListAdapter(this);
         productList.setAdapter(plAdapter);
 
+        searchAll();
+
         myshopAdapter = new ProductListAdapter(this);
         myshopList.setAdapter(myshopAdapter);
 
@@ -364,27 +366,30 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
 
     }
 
+    public void searchAll(){
+        HomeActivity.this.api().searchProducts("", 1, 10, new ApiCallback<Page<ProductInfo>>() {
+            @Override
+            public void onSuccess(Page<ProductInfo> data) throws JSONException {
+                HomeActivity.this.plAdapter.clear();
+                ProductItem.Factory.convertFromProductInfo(Arrays.asList(data.data), HomeActivity.this.plAdapter);
+                plAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onError(int code, String message, Object data) throws JSONException {
+                api().showToast("搜索失败");
+            }
+        });
+    }
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             //TODO 添加图标
             case R.id.id_tab_shop:
                 api().showToast(" tab 1");
+                searchAll();
                 //设置viewPager的当前Tab
                 mViewpager.setCurrentItem(0);
-                HomeActivity.this.api().searchProducts("", 1, 10, new ApiCallback<Page<ProductInfo>>() {
-                    @Override
-                    public void onSuccess(Page<ProductInfo> data) throws JSONException {
-                        HomeActivity.this.plAdapter.clear();
-                        ProductItem.Factory.convertFromProductInfo(Arrays.asList(data.data), HomeActivity.this.plAdapter);
-                        plAdapter.notifyDataSetChanged();
-                    }
-
-                    @Override
-                    public void onError(int code, String message, Object data) throws JSONException {
-                        api().showToast("搜索失败");
-                    }
-                });
                 break;
             case R.id.id_tab_myshop:
                 api().showToast(" tab 2");
@@ -576,7 +581,7 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
             @Override
             public void onSuccess(UserInfo data) throws JSONException {
                 user.setText("用户名:" + data.username);
-                balance.setText("余额:" + String.valueOf(data.balance));
+                balance.setText("余额" + String.valueOf(((double)data.balance) / 100));
                 HomeActivity.this.userInfo = data;
                 if (userInfo.authority == 0) {
                     orderSale.setVisibility(View.GONE);

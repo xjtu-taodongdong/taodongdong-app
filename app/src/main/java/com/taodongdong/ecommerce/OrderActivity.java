@@ -86,6 +86,7 @@ public class OrderActivity extends AbstractActivity {
                     @Override
                     public void onSuccess(String data) throws JSONException {
                         OrderActivity.this.api().showToast("成功");
+                        recreate();
                     }
 
                     @Override
@@ -116,7 +117,7 @@ public class OrderActivity extends AbstractActivity {
                 OrderActivity.this.api().confirmOrder(orderID, new ApiCallback<String>() {
                     @Override
                     public void onSuccess(String data) throws JSONException {
-
+                        recreate();
                     }
 
                     @Override

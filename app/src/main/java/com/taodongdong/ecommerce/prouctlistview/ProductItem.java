@@ -39,7 +39,9 @@ public class ProductItem {
         public static void  convertFromProductInfo(List<ProductInfo> list, ProductListAdapter adapter){
             adapter.clear();
             for(int i = 0; i < list.size(); i++){
-                ProductItem item = new ProductItem(list.get(i).productDescription, adapter.defaultImage);
+                ProductInfo info = list.get(i);
+                String txt = String.format("%s:%s",info.productName,info.productDescription);
+                ProductItem item = new ProductItem(txt, adapter.defaultImage);
                 item.id = list.get(i).id;
                 adapter.add(item);
                 Log.i("TDD", "image getter initing ");
