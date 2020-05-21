@@ -53,6 +53,7 @@ public class ProductDetails extends AbstractActivity {
     int ID;
     private static int IMAGE = 1;
     private Uri uploadImgUri;
+    String uid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,13 +68,7 @@ public class ProductDetails extends AbstractActivity {
         price = (TextView) findViewById(R.id.priceOfProduct);
         pull_off = (Button) findViewById(R.id.pull_off_shelves);
         Intent intent = getIntent();
-        String authority = intent.getStringExtra("authority");
-        if (Integer.parseInt(authority) == 1) {
-            purchase.setVisibility(View.GONE); //商家权限，隐藏购买按钮
-        } else {
-            modify.setVisibility(View.GONE);
-            pull_off.setVisibility(View.GONE);//用户权限，隐藏修改和下架按钮
-        }
+        uid = intent.getStringExtra("uid");
         ID = intent.getIntExtra("id", 0);
         if (ID != 0) {
             api().getProductInfo(ID, new ApiCallback<ProductInfo>() {
@@ -99,7 +94,12 @@ public class ProductDetails extends AbstractActivity {
                             ProductDetails.this.confirm_pulloff();
                         }
                     });
-
+                    if (Integer.parseInt(uid) == data.merchantUserId) {
+                        purchase.setVisibility(View.GONE); //商家权限，隐藏购买按钮
+                    } else {
+                        modify.setVisibility(View.GONE);
+                        pull_off.setVisibility(View.GONE);//用户权限，隐藏修改和下架按钮
+                    }
 
                 }
 

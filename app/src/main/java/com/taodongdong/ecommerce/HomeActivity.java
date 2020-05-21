@@ -169,28 +169,52 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
         productList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                int ID = HomeActivity.this.plAdapter.getItem(position).getID();
-                Bundle b = new Bundle();
-                b.putInt("id", ID);
-                Intent intent = new Intent();
-                intent.putExtras(b);
-                intent.putExtra("authority", "0");
-                intent.setClass(HomeActivity.this, ProductDetails.class);
-                startActivity(intent);
+
+                final int p = position;
+                api().getUserInfo(new ApiCallback<UserInfo>() {
+                    @Override
+                    public void onSuccess(UserInfo data) throws JSONException {
+                        int ID = HomeActivity.this.plAdapter.getItem(p).getID();
+                        Bundle b = new Bundle();
+                        b.putInt("id", ID);
+                        Intent intent = new Intent();
+                        intent.putExtras(b);
+                        intent.putExtra("uid", String.valueOf(data.id));
+                        intent.setClass(HomeActivity.this, ProductDetails.class);
+                        startActivity(intent);
+                    }
+
+                    @Override
+                    public void onError(int code, String message, Object data) throws JSONException {
+
+                    }
+                });
+
 
             }
         });
         myshopList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                int ID = HomeActivity.this.myshopAdapter.getItem(position).getID();
-                Bundle b = new Bundle();
-                b.putInt("id", ID);
-                Intent intent = new Intent();
-                intent.putExtras(b);
-                intent.putExtra("authority", "1");
-                intent.setClass(HomeActivity.this, ProductDetails.class);
-                startActivity(intent);
+                final int p = position;
+                api().getUserInfo(new ApiCallback<UserInfo>() {
+                    @Override
+                    public void onSuccess(UserInfo data) throws JSONException {
+                        int ID = HomeActivity.this.myshopAdapter.getItem(p).getID();
+                        Bundle b = new Bundle();
+                        b.putInt("id", ID);
+                        Intent intent = new Intent();
+                        intent.putExtras(b);
+                        intent.putExtra("uid", String.valueOf(data.id));
+                        intent.setClass(HomeActivity.this, ProductDetails.class);
+                        startActivity(intent);
+                    }
+
+                    @Override
+                    public void onError(int code, String message, Object data) throws JSONException {
+
+                    }
+                });
 
             }
         });
@@ -288,6 +312,18 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
 
         myshopAdapter = new ProductListAdapter(this);
         myshopList.setAdapter(myshopAdapter);
+
+        api().getUserInfo(new ApiCallback<UserInfo>() {
+            @Override
+            public void onSuccess(UserInfo data) throws JSONException {
+                userInfo = data;
+            }
+
+            @Override
+            public void onError(int code, String message, Object data) throws JSONException {
+
+            }
+        });
     }
 
     //初始化控件
