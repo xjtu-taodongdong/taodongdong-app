@@ -207,16 +207,11 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
 
                 resetImgs();
                 switch (currentItem) {
-                    //TODO 添加图标
                     case 0:
-                        shopImg.setImageResource(R.mipmap.ic_launcher);
                         break;
                     case 1:
-                        //TODO 更新我的商店列表
-                        myshopImg.setImageResource(R.mipmap.ic_launcher);
                         break;
                     case 2:
-                        usrImg.setImageResource(R.mipmap.ic_launcher);
                         HomeActivity.this.refreshUserInfo();
                         break;
                 }
@@ -358,7 +353,6 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
                 api().showToast(" tab 1");
                 //设置viewPager的当前Tab
                 mViewpager.setCurrentItem(0);
-                shopImg.setImageResource(R.mipmap.ic_launcher);
                 break;
             case R.id.id_tab_myshop:
                 api().showToast(" tab 2");
@@ -400,13 +394,11 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
                         }
                     }
                 });
-                myshopImg.setImageResource(R.mipmap.ic_launcher);
                 //TODO 更新自己的商品列表
                 break;
             case R.id.id_tab_usr:
                 api().showToast(" tab 3");
                 mViewpager.setCurrentItem(2);
-                usrImg.setImageResource(R.mipmap.ic_launcher);
                 break;
         }
     }
@@ -414,9 +406,6 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
     //将四个ImageButton设置成灰色
     private void resetImgs() {
         //TODO 添加图标
-        shopImg.setImageResource(R.mipmap.ic_launcher);
-        myshopImg.setImageResource(R.mipmap.ic_launcher);
-        usrImg.setImageResource(R.mipmap.ic_launcher);
 
     }
     private void refreshShopList(){
