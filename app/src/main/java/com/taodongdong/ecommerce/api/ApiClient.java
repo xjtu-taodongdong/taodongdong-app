@@ -385,6 +385,7 @@ public class ApiClient extends AbstractApiClient {
                     p.productPrice = d.getInt("product_price");
                     p.productAmount = d.getInt("product_amount");
                     p.productDescription = d.getString("product_description");
+                    p.productImage = d.getString("product_image");
                     standardOnSuccess(callback, p);
                 }
 
@@ -460,7 +461,7 @@ public class ApiClient extends AbstractApiClient {
     public void modifyProductAmount(int id, int amount, final ApiCallback<ProductInfo> callback) {
         try {
             JSONObject input = new JSONObject();
-            input.put("id", productInfo.id);
+            input.put("id", id);
             input.put("product_amount", amount);
             sendRequest("Product.modifyProduct", input, new ApiCallback<Object>() {
                 @Override
