@@ -138,7 +138,8 @@ public class ProductDetails extends AbstractActivity {
                         ProductDetails.this.api().payOrder(data.id, new ApiCallback<String>() {
                             @Override
                             public void onSuccess(String data) throws JSONException {
-                                    api().showToast("购买成功");
+                                api().showToast("购买成功");
+                                ProductDetails.this.refreshProduct();
                             }
 
                             @Override
@@ -239,23 +240,7 @@ public class ProductDetails extends AbstractActivity {
                                     @Override
                                     public void onSuccess(String data) throws JSONException {
                                         api().showToast("修改商品成功并上传了图片");
-                                        api().getProductInfo(ID, new ApiCallback<ProductInfo>() {
-                                            @Override
-                                            public void onSuccess(ProductInfo data) throws JSONException {
-
-                                                ImageGetter ig = new ImageGetter(ProductDetails.this.imageView);
-                                                ig.execute(data.productImage);
-                                                ProductDetails.this.name.setText(data.productName);
-                                                ProductDetails.this.amount.setText(String.valueOf(data.productAmount));
-                                                ProductDetails.this.detail.setText(data.productDescription);
-                                                ProductDetails.this.price.setText(data.getProductPriceReadable());
-                                            }
-
-                                            @Override
-                                            public void onError(int code, String message, Object data) throws JSONException {
-
-                                            }
-                                        });
+                                        ProductDetails.this.refreshProduct();
                                         dialog.dismiss();
                                     }
 
@@ -283,6 +268,42 @@ public class ProductDetails extends AbstractActivity {
             @Override
             public void onClick(View view) {
                 dialog.dismiss();
+            }
+        });
+    }
+
+
+    protected void refreshProduct(){
+        api().getProductInfo(ID, new ApiCallback<ProductInfo>() {
+            @Override
+            public void onSuccess(ProductInfo data) throws JSONException {
+
+                ImageGetter ig = new ImageGetter(imageView);
+                ig.execute(data.productImage);
+                name.setText(data.productName);
+                amount.setText(String.valueOf(data.productAmount));
+                detail.setText(data.productDescription);
+                price.setText(data.getProductPriceReadable());
+
+                modify.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ProductDetails.this.modify_Dialog();
+                    }
+                });//修改商品信息的事件监听
+                pull_off.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ProductDetails.this.confirm_pulloff();
+                    }
+                });
+
+
+            }
+
+            @Override
+            public void onError(int code, String message, Object data) throws JSONException {
+
             }
         });
     }
