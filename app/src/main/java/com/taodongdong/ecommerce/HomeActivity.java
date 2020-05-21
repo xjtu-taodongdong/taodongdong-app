@@ -205,7 +205,6 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
             public void onPageSelected(int position) {
                 int currentItem = mViewpager.getCurrentItem();
 
-                resetImgs();
                 switch (currentItem) {
                     case 0:
                         break;
@@ -346,7 +345,6 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
 
     @Override
     public void onClick(View v) {
-        resetImgs();
         switch (v.getId()) {
             //TODO 添加图标
             case R.id.id_tab_shop:
@@ -403,11 +401,6 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
         }
     }
 
-    //将四个ImageButton设置成灰色
-    private void resetImgs() {
-        //TODO 添加图标
-
-    }
     private void refreshShopList(){
         api().getAllProducts(this.storeInfo.id, 1, 10, new ApiCallback<Page<ProductInfo>>() {
             @Override
