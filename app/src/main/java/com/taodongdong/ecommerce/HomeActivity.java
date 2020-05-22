@@ -758,17 +758,8 @@ public class HomeActivity extends AbstractActivity implements View.OnClickListen
                     public void onSuccess(String data) throws JSONException {
                         api().showToast("注册为商家成功");
                         reg_saler.setVisibility(View.GONE);
-                        api().getUserInfo(new ApiCallback<UserInfo>() {
-                            @Override
-                            public void onSuccess(UserInfo data) throws JSONException {
-                                HomeActivity.this.userInfo = data;
-                            }
-
-                            @Override
-                            public void onError(int code, String message, Object data) throws JSONException {
-
-                            }
-                        });
+                        orderSale.setVisibility(View.VISIBLE);
+                        HomeActivity.this.refreshUserInfo();
                     }
 
                     @Override
